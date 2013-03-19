@@ -1,0 +1,18 @@
+CACHE MANIFEST
+# Version: 6
+NETWORK:
+/note/
+/resources
+http://auth.l42.eu/whoami
+CACHE:
+/favicon.ico
+/admin
+/todo/
+/preload
+/reeniebeanie.ttf
+http://l42.eu/bootloader
+http://l42.eu/logo.png
+http://l42.eu/cog.png
+http://l42.eu/music.png
+FALLBACK:
+/todo/ /todo/

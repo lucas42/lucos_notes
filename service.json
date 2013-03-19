@@ -1,0 +1,8 @@
+{
+	"port": 8004,
+	"name": "Notes",
+	"commands": {
+		"main": 'nodejs server.js'
+	},
+	"subdomain": "notes"
+}

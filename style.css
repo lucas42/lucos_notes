@@ -1,0 +1,39 @@
+
+body { background: #666; color: white;  font-size: 20px; left: 0; right: 0; position: absolute; padding: 5%; margin: 0; font-family: 'Reenie Beanie', Textile, cursive; }
+
+#lucos_navbar_title { font-family: 'Reenie Beanie', Textile, cursive; font-size: 40px; height: 40px!important; line-height: 35px!important; pointer-events: none; }
+#lucos_navbar_title time { font-size: 18px; line-height: 20px; position: relative; top: -7px; pointer-events: auto; }
+#lucos_navbar, .lucos_menu {  }
+header { overflow: hidden; left: 0; right: 0; height: 1.4em; margin: 0 5%;}
+header h1{ text-align: center; border-bottom: solid white; color: white; overflow: hidden; height: 1.2em; margin: 0; padding: 0.5em;}
+.controls * { background-color: black; background-image: -webkit-gradient(linear, 0 100%, 0 0, color-stop(0, transparent), color-stop(0.15, transparent), color-stop(0.9, rgba(255, 255, 255, 0.4))); color: #fff; border-radius: 1em; padding: 0 1em; margin: 0 1em; font-family: 'Reenie Beanie', Textile, cursive; font-size: 25px; font-weight: bold; border: none; }
+.controls *:active { background-image: -webkit-gradient(linear, 0 0, 0 100%, color-stop(0, transparent), color-stop(0.15, transparent), color-stop(0.9, rgba(255, 255, 255, 0.4))); }
+.controls { text-align: center; clear: right; padding-top: 0.2em; height: 1.8em; display: block; overflow: hidden; }
+footer { text-align: center; }
+#notes, #todo { margin: 0; padding: 1em; background: #edb; color: #333; border-radius: 2px; -webkit-box-shadow: 5px 5px 10px 0px #000; margin-bottom: 10px; }
+.section.hidden { color: #999 }
+.section { margin-left: 1em;}
+.section h3 { cursor: pointer; margin: 0.2em 0; padding: 0.2em 0;}
+.section:not(.open) > :not(h3) {display: none;}
+.section p { margin: 0 1em; }
+.action { font-weight: bold; padding: 0.3em; margin: 0.4em; cursor: pointer; }
+.delete { color: red; }
+.newnote, .done { color: green; }
+.edit { color: #950; }
+#todo > li > *.deleted { text-decoration: line-through; opacity: 0.5; }
+#breadcrumb { float: left; margin: 2px 1em; }
+#breadcrumb a { text-decoration: none; color: inherit; }
+#breadcrumb a:hover { text-decoration: underline; }
+#todo > li { margin: 0.2em 2em; padding: 0.2em; border-bottom: solid thin #AAF; text-overflow: ellipsis; overflow: hidden; }
+#todo > .list > a { padding: 0.5em; }
+#todo > .list > a, #todo > .list input { text-decoration: none; color: inherit; font-weight: bold; }
+#todo > li.spare { list-style: none; border-bottom: none; height: 1em; }
+.inlineform { display: inline; }
+.inlineform input { border: none; background: inherit; color: inherit; font: inherit; margin: 0; width: 100%; }
+
+@font-face {
+  font-family: 'Reenie Beanie';
+  font-style: normal;
+  font-weight: normal;
+  src: url('/reeniebeanie.ttf');
+}
