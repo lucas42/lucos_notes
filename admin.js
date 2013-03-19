@@ -1,3 +1,4 @@
+var lucos = require("_lucos");
 if (location.path == "/admin") {
 	lucos.waitFor('notesSynced', updateView, true);
 	lucos.waitFor('ready', updateView, true);

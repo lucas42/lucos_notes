@@ -1,5 +1,7 @@
-//lucos.addMenuItem('Sync', window.Notes.forceSync);
-window.Notes.setNamespace('todo');
+var lucos = require("_lucos");
+//lucos.addMenuItem('Sync', require('noteslib').Notes.forceSync);
+require('noteslib').Notes.setNamespace('todo');
+var List = require('noteslib').List;
 lucos.waitFor('ready', function () {
 	lucos.nav.enable('/todo/', updateView);
 	if (lucos.nav.isPreload()) return;

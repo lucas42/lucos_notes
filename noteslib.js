@@ -1,3 +1,4 @@
+var lucos = require("_lucos");
 var Notes = function (){
 
 	var notes;
@@ -6,7 +7,7 @@ var Notes = function (){
 	else queue = [];
 	var namespace = 'default';
 
-	window.addEventListener('online', syncData, true);
+	lucos.pubsub.listen('online', syncData, true);
 	autoSync();
 	
 	function setNamespace(newnamespace) {
@@ -201,5 +202,5 @@ List.getAll = function _getlists() {
 	return Notes.getAll("", false, List.isList, function (path) {return new List(path); });
 }
 
-window.Notes = Notes;
-window.List = List;
+exports.Notes = Notes;
+exports.List = List;
