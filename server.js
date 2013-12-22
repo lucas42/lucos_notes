@@ -43,8 +43,7 @@ var redirects = {
 	'/admin/': '/admin',
 	'/todo': '/todo/',
 }
-var sys = require('sys'),
-   http = require('http');
+var http = require('http');
 http.createServer(function _handleRequest(req, res) {
 	var cookies = {};
 	var agentid = null;
@@ -196,7 +195,7 @@ http.createServer(function _handleRequest(req, res) {
 		
 	}
 }).listen(8004);
-sys.puts('Server running at http://127.0.0.1:8004/');
+console.log('Server running at http://127.0.0.1:8004/');
 
 function sendError(res, code, message, headers) {
 	if (!headers) headers = {};
