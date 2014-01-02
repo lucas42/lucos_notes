@@ -13,6 +13,5 @@ CACHE:
 http://l42.eu/bootloader
 http://l42.eu/logo.png
 http://l42.eu/cog.png
-http://l42.eu/music.png
 FALLBACK:
 /todo/ /todo/
