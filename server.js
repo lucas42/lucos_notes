@@ -5,8 +5,14 @@ var fs = require('fs')
    resources = require('../core/resources.js');
 var notes = {};
 fs.readFile('data.json', function(err, data) {
-	if (err) notes = {};
-	else notes = JSON.parse(data);
+	try {
+		if (err) throw err;
+		notes = JSON.parse(data);
+		if (typeof notes != "object") throw "Incorrect data type: "+(typeof notes);
+	} catch (e) {
+		console.error("Can't parse existing data.  Creating blank file.  "+e);
+		data = {};
+	}
 });
 var agents = {};
 
