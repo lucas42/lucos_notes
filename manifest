@@ -3,15 +3,15 @@ CACHE MANIFEST
 NETWORK:
 /note/
 /resources
-http://auth.l42.eu/whoami
+https://auth.l42.eu/whoami
 CACHE:
 /favicon.ico
 /admin
 /todo/
 /preload
 /reeniebeanie.ttf
-http://l42.eu/bootloader
-http://l42.eu/logo.png
-http://l42.eu/cog.png
+https://l42.eu/bootloader
+https://l42.eu/logo.png
+https://l42.eu/cog.png
 FALLBACK:
 /todo/ /todo/

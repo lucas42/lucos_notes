@@ -85,7 +85,7 @@ http.createServer(function _handleRequest(req, res) {
 			agentid = agents[token].id;
 		}
 		if (!agentid) {
-			if (!params.token) return redirect(res, "http://auth.l42.eu/authenticate?redirect_uri="+encodeURIComponent('http://'+req.headers.host+req.url));
+			if (!params.token) return redirect(res, "https://auth.l42.eu/authenticate?redirect_uri="+encodeURIComponent('https://'+req.headers.host+req.url));
 			var paramstring = querystring.stringify({
 				token: token
 			});
