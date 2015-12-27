@@ -1,0 +1,12 @@
+[Service]
+ExecStart=/usr/bin/nodejs server.js
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=lucos_notes
+User=lucos
+Group=lucos
+WorkingDirectory=/web/lucos/lucos_notes
+
+[Install]
+WantedBy=multi-user.target
