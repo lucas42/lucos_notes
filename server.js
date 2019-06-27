@@ -3,22 +3,37 @@ var fs = require('fs')
    url = require('url'),
    querystring = require('querystring'),
    resources = require('../core/resources.js');
+const stateFile = 'data.json';
 var notes = {};
-fs.readFile('data.json', function(err, data) {
-	try {
-		if (err) throw err;
-		notes = JSON.parse(data);
-		if (typeof notes != "object") throw "Incorrect data type: "+(typeof notes);
-	} catch (e) {
-		console.error("Can't parse existing data.  Creating blank file.  "+e);
-		data = {};
+getState(function(err, parsedData) {
+	if (err) {
+		console.error("Can't parse existing data.  Creating blank file.  "+err);
+		saveState();
 	}
+	notes = parsedData;
 });
 var agents = {};
 
+function getState(callback) {
+	fs.readFile(stateFile, function(err, data) {
+	try {
+		if (err) throw err;
+		const parsedData = JSON.parse(data);
+		if (typeof parsedData != "object") throw "Incorrect data type: "+(typeof parsedData);
+		callback(null, parsedData);
+	} catch (e) {
+		callback(e, {});
+	}
+});
+}
+
 function saveState() {
-	fs.unlink('data.json', function() {
-		fs.writeFile('data.json', JSON.stringify(notes));
+	fs.unlink(stateFile, function(unlinkErr) {
+		fs.writeFile(stateFile, JSON.stringify(notes), function(writeErr) {
+			if (writeErr) {
+				console.error("Error saving state:", writeErr.message);
+			}
+		});
 	});
 }
 
@@ -59,6 +74,31 @@ http.createServer(function _handleRequest(req, res) {
 	var url_parts = url.parse(req.url, true);
 	var path = url_parts.pathname;
 	var params = url_parts.query;
+
+	if (path === "/_info") {
+		const output = {
+			system: 'lucos_notes',
+			checks: {
+				datafile: {
+					techDetail: `Reads ${stateFile} from file system`,
+				}
+			},
+			metrics: {},
+		};
+		getState(function (err, parsedData) {
+			if (err) {
+				output.checks.datafile.ok = false;
+				output.checks.datafile.debug = err.message || err;
+			} else {
+				output.checks.datafile.ok = true;
+			}
+			res.writeHead(200, {'Content-Type': 'application/json' });
+			res.write(JSON.stringify(output));
+			res.end();
+		});
+		return;
+	}
+
 	if (path == "/resources") {
 		resources.load(res, params.v);
 		return;
