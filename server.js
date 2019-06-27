@@ -3,7 +3,7 @@ var fs = require('fs')
    url = require('url'),
    querystring = require('querystring'),
    resources = require('../core/resources.js');
-const stateFile = 'data.json';
+const stateFile = '/var/lib/notes/data.json';
 var notes = {};
 getState(function(err, parsedData) {
 	if (err) {
