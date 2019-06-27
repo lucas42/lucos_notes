@@ -1,8 +1,13 @@
 version: '3'
 services:
-    notes:
-      build: .
-      container_name: notes
-      ports: 
-        - "8004:8004"
-      image: lucas42/lucos_notes
+  notes:
+    build: .
+    container_name: notes
+    ports:
+      - "8004:8004"
+    image: lucas42/lucos_notes
+    volumes:
+      - stateFile:/var/lib/notes/
+
+volumes:
+  stateFile:
