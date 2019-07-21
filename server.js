@@ -79,7 +79,7 @@ http.createServer(function _handleRequest(req, res) {
 		const output = {
 			system: 'lucos_notes',
 			checks: {
-				datafile: {
+				"data-file": {
 					techDetail: `Reads ${stateFile} from file system`,
 				}
 			},
@@ -90,10 +90,10 @@ http.createServer(function _handleRequest(req, res) {
 		};
 		getState(function (err, parsedData) {
 			if (err) {
-				output.checks.datafile.ok = false;
-				output.checks.datafile.debug = err.message || err;
+				output.checks['data-file'].ok = false;
+				output.checks['data-file'].debug = err.message || err;
 			} else {
-				output.checks.datafile.ok = true;
+				output.checks['data-file'].ok = true;
 			}
 			res.writeHead(200, {'Content-Type': 'application/json' });
 			res.write(JSON.stringify(output));
