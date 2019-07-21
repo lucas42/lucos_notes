@@ -84,6 +84,9 @@ http.createServer(function _handleRequest(req, res) {
 				}
 			},
 			metrics: {},
+			ci: {
+				circle: "gh/lucas42/lucos_notes",
+			}
 		};
 		getState(function (err, parsedData) {
 			if (err) {
