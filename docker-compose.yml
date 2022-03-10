@@ -5,9 +5,12 @@ services:
     container_name: notes
     ports:
       - "8004:8004"
+    environment:
+      PORT: 8004
+      STATE_DIR: /var/lib/notes
     image: lucas42/lucos_notes
     volumes:
-      - stateFile:/var/lib/notes/
+      - stateFile:/var/lib/notes
 
 volumes:
   stateFile:
