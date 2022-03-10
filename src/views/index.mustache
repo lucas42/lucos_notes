@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html> 
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<link rel="apple-touch-icon" href="/icon.png" />
+		<title>Todo List</title>
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width" />
+		<link href="/style.css" rel="stylesheet">
+		<link rel="icon" type="image/png" href="/icon.png" />
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	</head>
+	<body>
+		<lucos-navbar>Todo List</lucos-navbar>
+		<header>
+			<nav id="breadcrumb" style="display: none;"><a href="/todo/" data-gotglobalhandlers="true">&lt; View all Todo Lists</a></nav>
+		</header>
+		<ul id="todo" class="lists">
+			{{#lists}}
+				<li class="list">
+					<a href="/todo/{{slug}}">{{name}}</a>
+				</li>
+			{{/lists}}
+		</ul>
+		<div class="controls">
+			<input type="button" value="New List" id="newtodolist" />
+		</div>
+	</body>
+</html>
