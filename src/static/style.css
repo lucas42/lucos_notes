@@ -1,9 +1,5 @@
 
 body { background: #666; color: white;  font-size: 20px; left: 0; right: 0; position: absolute; padding: 5%; margin: 0; font-family: 'Reenie Beanie', Textile, cursive; }
-
-#lucos_navbar_title { font-family: 'Reenie Beanie', Textile, cursive; font-size: 40px; height: 40px!important; line-height: 35px!important; pointer-events: none; }
-#lucos_navbar_title time { font-size: 18px; line-height: 20px; position: relative; top: -7px; pointer-events: auto; }
-#lucos_navbar, .lucos_menu {  }
 header { overflow: hidden; left: 0; right: 0; height: 1.4em; margin: 0 5%;}
 header h1{ text-align: center; border-bottom: solid white; color: white; overflow: hidden; height: 1.2em; margin: 0; padding: 0.5em;}
 .controls * { background-color: black; background-image: -webkit-gradient(linear, 0 100%, 0 0, color-stop(0, transparent), color-stop(0.15, transparent), color-stop(0.9, rgba(255, 255, 255, 0.4))); color: #fff; border-radius: 1em; padding: 0 1em; margin: 0 1em; font-family: 'Reenie Beanie', Textile, cursive; font-size: 25px; font-weight: bold; border: none; }
