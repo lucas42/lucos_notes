@@ -1,1 +1,2 @@
-console.log("hello world");
+
+require("./components/lucos-navbar");
