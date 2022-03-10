@@ -10,7 +10,7 @@ app.set('view engine', 'mustache');
 app.set('views', `${__dirname}/views`);
 
 app.get('/', (req, res) => {
-  res.redirect("/todo/");
+	res.redirect("/todo/");
 });
 app.get('/todo', async (req, res) => {
 	res.render("index", {
@@ -19,6 +19,11 @@ app.get('/todo', async (req, res) => {
 			{slug:"projects", name: "Projects"},
 			{slug:"ceol", name: "Ceol"},
 		]
+	});
+});
+app.get('/todo/:slug', async (req, res) => {
+	res.render("list", {
+		name: "static list",
 	});
 });
 

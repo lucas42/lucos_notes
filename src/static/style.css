@@ -2,11 +2,11 @@
 body { background: #666; color: white;  font-size: 20px; left: 0; right: 0; position: absolute; padding: 5%; margin: 0; font-family: 'Reenie Beanie', Textile, cursive; }
 header { overflow: hidden; left: 0; right: 0; height: 1.4em; margin: 0 5%;}
 header h1{ text-align: center; border-bottom: solid white; color: white; overflow: hidden; height: 1.2em; margin: 0; padding: 0.5em;}
-.controls * { background-color: black; background-image: -webkit-gradient(linear, 0 100%, 0 0, color-stop(0, transparent), color-stop(0.15, transparent), color-stop(0.9, rgba(255, 255, 255, 0.4))); color: #fff; border-radius: 1em; padding: 0 1em; margin: 0 1em; font-family: 'Reenie Beanie', Textile, cursive; font-size: 25px; font-weight: bold; border: none; }
-.controls *:active { background-image: -webkit-gradient(linear, 0 0, 0 100%, color-stop(0, transparent), color-stop(0.15, transparent), color-stop(0.9, rgba(255, 255, 255, 0.4))); }
-.controls { text-align: center; clear: right; padding-top: 0.2em; height: 1.8em; display: block; overflow: hidden; }
+#controls * { background-color: black; background-image: -webkit-gradient(linear, 0 100%, 0 0, color-stop(0, transparent), color-stop(0.15, transparent), color-stop(0.9, rgba(255, 255, 255, 0.4))); color: #fff; border-radius: 1em; padding: 0 1em; margin: 0 1em; font-family: 'Reenie Beanie', Textile, cursive; font-size: 25px; font-weight: bold; border: none; }
+#controls *:active { background-image: -webkit-gradient(linear, 0 0, 0 100%, color-stop(0, transparent), color-stop(0.15, transparent), color-stop(0.9, rgba(255, 255, 255, 0.4))); }
+#controls { text-align: center; clear: right; padding-top: 0.2em; height: 1.8em; display: block; overflow: hidden; }
 footer { text-align: center; }
-#notes, #todo { margin: 0; padding: 1em; background: #edb; color: #333; border-radius: 2px; -webkit-box-shadow: 5px 5px 10px 0px #000; margin-bottom: 10px; }
+#todo { margin: 0; padding: 1em; background: #edb; color: #333; border-radius: 2px; -webkit-box-shadow: 5px 5px 10px 0px #000; margin-bottom: 10px; }
 .section.hidden { color: #999 }
 .section { margin-left: 1em;}
 .section h3 { cursor: pointer; margin: 0.2em 0; padding: 0.2em 0;}
