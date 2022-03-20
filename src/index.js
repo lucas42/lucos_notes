@@ -2,7 +2,7 @@ import express from 'express';
 import mustacheExpress from 'mustache-express';
 const app = express();
 const port = process.env.PORT || 8004;
-import * as state from './state.js';
+import state, {getInfoCheck} from './statefs.js';
 
 app.use(express.static('./static', {extensions: ['json']}));
 
@@ -33,7 +33,7 @@ app.get('/_info', async (req,res) => {
 	const info = {
 		system: 'lucos_notes',
 		checks: {
-			"data-file": await state.getInfoCheck(),
+			"data-file": await getInfoCheck(),
 		},
 		metrics: {},
 		ci: {
