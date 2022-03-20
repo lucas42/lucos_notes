@@ -1,4 +1,5 @@
 import './components/lucos-navbar.js';
+import './load-service-worker.js';
 
 let controls = document.createElement("div");
 controls.id = "controls";
