@@ -13,19 +13,19 @@ app.set('views', `./views`);
 app.get('/', (req, res) => {
 	res.redirect("/todo/");
 });
-app.get('/todo', async (req, res) => {
-	res.render("index", {
-		lists: [
-			{slug:"groceries", name: "Grocery Shopping"},
-			{slug:"projects", name: "Projects"},
-			{slug:"ceol", name: "Ceol"},
-		]
-	});
+app.get('/todo', async (req, res, next) => {
+	try {
+		res.render("index", await state.getLists());
+	} catch (err) {
+		next(err);
+	}
 });
-app.get('/todo/:slug', async (req, res) => {
-	res.render("list", {
-		name: "static list",
-	});
+app.get('/todo/:slug', async (req, res, next) => {
+  try {
+    res.render("list", await state.getList(req.params.slug));
+  } catch (err) {
+    next(err);
+  }
 });
 
 app.get('/_info', async (req,res) => {
@@ -42,6 +42,20 @@ app.get('/_info', async (req,res) => {
 	};
 	res.json(info);
 });
+
+// Error Handler
+app.use((error, req, res, next) => {
+
+  // "Can't find" errors should 404 and not log
+  if(error.message.startsWith("Can't find")) {
+    res.status(404);
+  } else {
+    console.error(error.stack);
+    res.status(500);
+  }
+  res.render("error", {message: error.message});
+});
+
 app.listen(port, function () {
 	console.log('App listening on port ' + port);
 });

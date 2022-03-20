@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html> 
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<link rel="apple-touch-icon" href="/icon.png" />
+		<title>Todo List - Error</title>
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width" />
+		<link href="/style.css" rel="stylesheet">
+		<link rel="icon" type="image/png" href="/icon.png" />
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	</head>
+	<body data-type="error">
+		<lucos-navbar font="'Reenie Beanie', Textile, cursive">Todo List</lucos-navbar>
+		<header>
+			<nav id="breadcrumb">
+				<a href="/todo/">&lt; View all Todo Lists</a>
+			</nav>
+		</header>
+		<div id="todo">
+			<h1 id="error-message">Error: {{message}}</h1>
+		</div>
+		<script type="text/javascript" src="/client.js"></script>
+	</body>
+</html>

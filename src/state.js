@@ -42,6 +42,24 @@ export function getInfoCheck() {
 	}
 }
 
+export function getLists() {
+	let lists = [];
+	for (const slug in data.lists) {
+		lists.push({
+			slug,
+			name: data.lists[slug].name,
+		});
+	}
+	return {lists};
+}
+export function getList(slug) {
+	if (!(slug in data.lists)) throw new Error(`Can't find list '${slug}'`);
+	return {
+		name: data.lists[slug].name,
+		items: data.lists[slug].items.map(uuid => data.items[uuid]),
+	}
+}
+
 /**
  * Transforms the state file format used in v1 to the v2 format
  **/
