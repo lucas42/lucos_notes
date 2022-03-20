@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "build": "browserify client/index.js > static/client.js && browserify client/service-worker/index.js > static/serviceworker.js"
+    "build": "webpack"
   },
   "repository": {
     "type": "git",
@@ -30,6 +30,6 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "browserify": "^17.0.0"
+    "webpack-cli": "^4.9.2"
   }
 }

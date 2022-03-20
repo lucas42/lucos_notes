@@ -1,4 +1,4 @@
-const pubsub = require("../pubsub");	
+import * as pubsub from '../pubsub.js';
 
 class LucosTimeElement extends HTMLElement {
 	constructor() {

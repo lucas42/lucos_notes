@@ -1,5 +1,4 @@
-
-require("./components/lucos-navbar");
+import './components/lucos-navbar.js';
 
 let controls = document.createElement("div");
 controls.id = "controls";
@@ -14,5 +13,5 @@ if (document.body.dataset["type"] == "listoflists") {
 	let newListButton = document.createElement("button");
 	newListButton.append(document.createTextNode("New List"));
 	newListButton.addEventListener("click", newList);
-	controls.append(newListButton);
+	controls.append(newListButton)
 }

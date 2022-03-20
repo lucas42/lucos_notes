@@ -1,2 +1,4 @@
 node_modules
 data.json
+src/static/client.js
+src/static/serviceworker.js

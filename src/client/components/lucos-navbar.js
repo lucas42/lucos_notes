@@ -1,4 +1,4 @@
-require("./lucos-time");
+import './lucos-time.js';
 
 class Navbar extends HTMLElement {
 	static get observedAttributes() {

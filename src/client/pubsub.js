@@ -78,10 +78,10 @@ function send(type, msg, target) {
 	msg.type = type;
 	target.postMessage(JSON.stringify(msg), '*');
 }
-module.exports = {
-	send: send,
-	listen: listen,
-	unlisten: unlisten,
-	waitFor: waitFor,
-	listenExisting: listenExisting
+export {
+	send,
+	listen,
+	unlisten,
+	waitFor,
+	listenExisting,
 }
