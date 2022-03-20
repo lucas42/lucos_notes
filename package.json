@@ -3,6 +3,7 @@
   "version": "2.0.0",
   "description": "An offline-friendly todo list",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",

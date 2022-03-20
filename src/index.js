@@ -1,13 +1,14 @@
-const express = require('express');
+import express from 'express';
+import mustacheExpress from 'mustache-express';
 const app = express();
 const port = process.env.PORT || 8004;
-const state = require("./state");
+import * as state from './state.js';
 
-app.use(express.static(__dirname + '/static', {extensions: ['json']}));
+app.use(express.static('./static', {extensions: ['json']}));
 
-app.engine('mustache', require('mustache-express')());
+app.engine('mustache', mustacheExpress());
 app.set('view engine', 'mustache');
-app.set('views', `${__dirname}/views`);
+app.set('views', `./views`);
 
 app.get('/', (req, res) => {
 	res.redirect("/todo/");

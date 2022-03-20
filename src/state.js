@@ -1,4 +1,5 @@
-const fs = require('fs');
+import * as fs from 'fs';
+import { v4 as uuidv4 } from 'uuid';
 
 let STATE_FILE;
 let data = {};
@@ -6,8 +7,8 @@ let data = {};
 // STATE_DIR should be the path of a directory which persists between restarts
 if ('STATE_DIR' in process.env) {
 	try {
-		STATE_FILE = `${process.env.STATE_DIR}/data_v2.json`
-		data = require(STATE_FILE);
+		STATE_FILE = `${process.env.STATE_DIR}/data_v2.json`;
+		data = JSON.parse(fs.readFileSync(STATE_FILE));
 		console.log(STATE_FILE, data);
 	} catch (err) {
 		console.log(`Can't find or parse data_v2.json; Trying to convert v1 data`, err);
@@ -25,7 +26,7 @@ function saveState() {
 	});
 }
 
-function getInfoCheck() {
+export function getInfoCheck() {
 	try {
 		require(STATE_FILE);
 		return {
@@ -45,10 +46,9 @@ function getInfoCheck() {
  * Transforms the state file format used in v1 to the v2 format
  **/
 function v2Migration (STATE_DIR) {
-	const { v4: uuidv4 } = require('uuid');
 	try {
 		const V1_STATE_FILE = `${STATE_DIR}/data.json`;
-		const v1Data = require(V1_STATE_FILE);
+		const v1Data = JSON.parse(fs.readFileSync(V1_STATE_FILE));
 		data = {
 			lists: {},
 			items: {},
@@ -126,8 +126,4 @@ function v2Migration (STATE_DIR) {
 	} catch (err) {
 		console.log(`Failed to transform v1 state file`, err);
 	}
-}
-
-module.exports = {
-	getInfoCheck,
 }
