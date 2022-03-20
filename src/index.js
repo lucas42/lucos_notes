@@ -21,11 +21,20 @@ app.get('/todo', async (req, res, next) => {
 	}
 });
 app.get('/todo/:slug', async (req, res, next) => {
-  try {
-    res.render("list", await state.getList(req.params.slug));
-  } catch (err) {
-    next(err);
-  }
+	try {
+		res.render("list", await state.getList(req.params.slug));
+	} catch (err) {
+		next(err);
+	}
+});
+app.get('/todo.json', async (req,res, next) => {
+	try {
+		res
+			.setHeader("Content-Type", "application/json")
+			.send(await state.getRawData());
+	} catch (err) {
+		next(err);
+	}
 });
 
 app.get('/_info', async (req,res) => {
@@ -46,14 +55,14 @@ app.get('/_info', async (req,res) => {
 // Error Handler
 app.use((error, req, res, next) => {
 
-  // "Can't find" errors should 404 and not log
-  if(error.message.startsWith("Can't find")) {
-    res.status(404);
-  } else {
-    console.error(error.stack);
-    res.status(500);
-  }
-  res.render("error", {message: error.message});
+	// "Can't find" errors should 404 and not log
+	if(error.message.startsWith("Can't find")) {
+		res.status(404);
+	} else {
+		console.error(error.stack);
+		res.status(500);
+	}
+	res.render("error", {message: error.message});
 });
 
 app.listen(port, function () {
