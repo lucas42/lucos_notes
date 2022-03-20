@@ -7,6 +7,14 @@ header h1{ text-align: center; border-bottom: solid white; color: white; overflo
 #controls { text-align: center; clear: right; padding-top: 0.2em; height: 1.8em; display: block; overflow: hidden; }
 footer { text-align: center; }
 #todo { margin: 0; padding: 1em; background: #edb; color: #333; border-radius: 2px; -webkit-box-shadow: 5px 5px 10px 0px #000; margin-bottom: 10px; }
+#todo a {
+  text-decoration: none;
+  font-style: italic;
+  color: inherit;
+}
+#todo a:hover {
+  text-decoration: underline;
+}
 .section.hidden { color: #999 }
 .section { margin-left: 1em;}
 .section h3 { cursor: pointer; margin: 0.2em 0; padding: 0.2em 0;}
