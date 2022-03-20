@@ -28,7 +28,7 @@ function saveState() {
 
 export function getInfoCheck() {
 	try {
-		require(STATE_FILE);
+		JSON.parse(fs.readFileSync(STATE_FILE));
 		return {
 			techDetail: `Reads ${STATE_FILE} from file system`,
 			ok: true,
