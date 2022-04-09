@@ -1,17 +1,23 @@
 export default class State {
 	#data;
-	constructor(rawData) {
-		this.#data = rawData;
+	constructor() {
+		const state = this;
+		state.waitUntilDataLoaded = new Promise((resolve, reject) => {
+			state.dataLoaded = resolve;
+		});
 	}
 	setRawData(rawData) {
 		this.#data = rawData;
+		this.dataLoaded(true);
 	}
 
-	getRawData() {
+	async getRawData() {
+		await this.waitUntilDataLoaded;
 		return this.#data;
 	}
 
-	getLists() {
+	async getLists() {
+		await this.waitUntilDataLoaded;
 		let lists = [];
 		for (const slug in this.#data.lists) {
 			lists.push({
@@ -21,7 +27,8 @@ export default class State {
 		}
 		return {lists};
 	}
-	getList(slug) {
+	async getList(slug) {
+		await this.waitUntilDataLoaded;
 		if (!(slug in this.#data.lists)) throw new Error(`Can't find list '${slug}'`);
 		return {
 			name: this.#data.lists[slug].name,

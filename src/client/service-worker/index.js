@@ -5,13 +5,16 @@ import { fetchTemplates, populateTemplate } from './templates.js';
 
 const state = new State();
 
+// Call fetchData every time the service worker is started to populate the state object from cache
+fetchData(state);
+
 self.addEventListener('install', event => {
 	event.waitUntil(Promise.all([
-		fetchData(state),
 		fetchResources(),
 		fetchTemplates(),
 	]));
 });
+
 
 async function handleRequest(request) {
 	try {

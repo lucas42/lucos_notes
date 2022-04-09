@@ -2,7 +2,8 @@ import * as fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
 import State from './state.js';
 let STATE_FILE;
-const state = new State(readFromFS());
+const state = new State();
+state.setRawData(readFromFS());
 
 
 function readFromFS() {
@@ -18,8 +19,8 @@ function readFromFS() {
 }
 
 function writeToFS() {
-	fs.unlink(STATE_FILE, function(unlinkErr) {
-		fs.writeFile(STATE_FILE, JSON.stringify(state.getRawData()), function(writeErr) {
+	fs.unlink(STATE_FILE, async function(unlinkErr) {
+		fs.writeFile(STATE_FILE, JSON.stringify(await state.getRawData()), function(writeErr) {
 			if (writeErr) {
 				console.error("Error saving state:", writeErr.message);
 			}
@@ -122,7 +123,6 @@ function v2Migration (STATE_DIR) {
 			data.lists[list].items = data.lists[list].unsorted_items.map(item => item.uuid);
 			delete data.lists[list].unsorted_items;
 		}
-		console.log("data", data.items, data.lists);
 		return data;
 		// writeToFS();
 	} catch (err) {
