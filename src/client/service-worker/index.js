@@ -23,7 +23,7 @@ async function handleRequest(request) {
 		urlparts.shift(); //pathname always starts with a slash, so ignore first part.
 		const component = urlparts.shift();
 		if (component === "todo") {
-			const slug = urlparts.shift();
+			const slug = decodeURI(urlparts.shift());
 			if (request.method === "GET") {
 				if (!slug) {
 					return populateTemplate('index', await state.getLists());
