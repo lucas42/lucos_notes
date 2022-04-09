@@ -8,7 +8,7 @@ app.use(express.static('./static', {extensions: ['json']}));
 
 app.engine('mustache', mustacheExpress());
 app.set('view engine', 'mustache');
-app.set('views', `./views`);
+app.set('views', `./templates`);
 
 app.get('/', (req, res) => {
 	res.redirect("/todo/");
@@ -36,6 +36,8 @@ app.get('/todo.json', async (req,res, next) => {
 		next(err);
 	}
 });
+
+app.use('/templates', express.static('./templates', {extensions: ['mustache']}));
 
 app.get('/_info', async (req,res) => {
 

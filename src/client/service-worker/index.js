@@ -1,6 +1,7 @@
 import State from '../../state.js';
 import fetchData from './fetch-state.js';
 import fetchResources from './static-resources.js';
+import { fetchTemplates, populateTemplate } from './templates.js';
 
 const state = new State();
 
@@ -8,28 +9,34 @@ self.addEventListener('install', event => {
 	event.waitUntil(Promise.all([
 		fetchData(state),
 		fetchResources(),
+		fetchTemplates(),
 	]));
 });
 
 async function handleRequest(request) {
-	const url = new URL(request.url);
-	const urlparts = url.pathname.split('/');
-	urlparts.shift(); //pathname always starts with a slash, so ignore first part.
-	const component = urlparts.shift();
-	if (component === "todo") {
-		const slug = urlparts.shift();
-		if (request.method === "GET") {
-			if (!slug) {
-				console.log("//TODO: Render list of lists");
-			} else {
-				console.log(`//TODO: Render list ${slug}`);
+	try {
+		const url = new URL(request.url);
+		const urlparts = url.pathname.split('/');
+		urlparts.shift(); //pathname always starts with a slash, so ignore first part.
+		const component = urlparts.shift();
+		if (component === "todo") {
+			const slug = urlparts.shift();
+			if (request.method === "GET") {
+				if (!slug) {
+					return populateTemplate('index', await state.getLists());
+				} else {
+					return populateTemplate('list', await state.getList(slug));
+				}
 			}
 		}
+		const cachedResponse = await caches.match(request);
+		if (cachedResponse) return cachedResponse;
+		console.error("Request not in cache", url.pathname, url.method, url.origin, url.search);
+		return await fetch(request);
+	} catch(error) {
+		console.error("Error handling request", error, request);
+		return populateTemplate('error', error);
 	}
-	const cachedResponse = await caches.match(request);
-	if (cachedResponse) return cachedResponse;
-	console.error("Request not in cache", url.pathname, url.method, url.origin, url.search);
-	return await fetch(request);
 }
 
 self.addEventListener('fetch', event => {
