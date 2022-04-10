@@ -52,10 +52,10 @@ describe('Get and set state data', () => {
 		const state = new State();
 		state.setRawData({lists:{
 			'groceries': {name: "Grocery Shopping", extraneousField: true, items:["abc","123"]},
-			'moarthings': {name: "Even More Stuff", ignoreme:"yes please", metoo: ["of course"]},
+			'moarthings': {name: "Even More Stuff", ignoreme:"yes please", metoo: ["of course"], items:[]},
 		}, items:{
-			"123": {"name":"Second Item", extraExtraneousField: true},
-			"abc": {"name":"First Item", ignoreThese:["this", "and this"]},
+			"123": {"name":"Second Item", extraExtraneousField: true, "list":"groceries"},
+			"abc": {"name":"First Item", ignoreThese:["this", "and this"], "list":"groceries"},
 			"unused": {"name":"Unused Item"},
 		}});
 		return state;
@@ -102,5 +102,46 @@ describe('Get and set state data', () => {
 		state.setList("newlist", "Brand New List");
 		const output = await state.getList('newlist');
 		expect(output.name).toEqual('Brand New List');
+	});
+	test('Update item with a new name', async () => {
+		const state = getPrepopulatedState();
+
+		state.setItem("abc", {name:"The First Item", irrelevantField: "hi 👋", list:"groceries"});
+		const output = await state.getList('groceries');
+		expect(output.items[0]).toEqual({name: "The First Item"});
+	});
+	test('Move item to different list', async () => {
+		const state = getPrepopulatedState();
+
+		state.setItem("abc", {name:"First Item", irrelevantField: "hi 👋", list:"moarthings"});
+		const groceryOutput = await state.getList('groceries');
+		const moarOutput = await state.getList('moarthings');
+		expect(groceryOutput.items).not.toContainEqual({name: "First Item"});
+		expect(moarOutput.items).toContainEqual({name: "First Item"});
+	});
+	test('Create new Item', async () => {
+		const state = getPrepopulatedState();
+
+		state.setItem("xyz", {name:"Third Item", otherField: true, list:"groceries"});
+		const output = await state.getList('groceries');
+		expect(output.items[2]).toEqual({name: "Third Item"});
+	});
+	test('Set Listless Item', async () => {
+		const state = getPrepopulatedState();
+
+		expect(state.setItem("abc", {name:"Third Item"})).rejects.toThrow("Item is missing a list");
+		expect(state.setItem("abc", {name:"Third Item", list: ""})).rejects.toThrow("Item is missing a list");
+		expect(state.setItem("abc", {name:"Third Item", list: []})).rejects.toThrow("Item's list slug is not a string");
+	});
+	test('Move item to non-existant list', async () => {
+		const state = getPrepopulatedState();
+
+		state.setItem("abc", {name:"First Item", irrelevantField: "hi 👋", list:"extralist"});
+		const groceryOutput = await state.getList('groceries');
+		const extraOutput = await state.getList('extralist');
+		expect(groceryOutput.items).not.toContainEqual({name: "First Item"});
+		expect(extraOutput.name).toEqual("extralist");
+		expect(extraOutput.items).toContainEqual({name: "First Item"});
+		expect(extraOutput.items).toHaveLength(1);
 	});
 });

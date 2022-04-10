@@ -36,7 +36,7 @@ export default class State {
 		await this.waitUntilDataLoaded;
 		if (!(slug in this.#data.lists)) throw new Error(`Can't find list '${slug}'`);
 		return {
-			name: this.#data.lists[slug].name,
+			name: this.#data.lists[slug].name || slug,
 			items: this.#data.lists[slug].items.map(uuid => {
 				const item = this.#data.items[uuid];
 				return {name: item.name};
@@ -45,11 +45,27 @@ export default class State {
 	}
 	async setList(slug, name) {
 		await this.waitUntilDataLoaded;
-		if (!name) name = slug;
 		if (slug in this.#data.lists) {
 			this.#data.lists[slug].name = name;
 		} else {
 			this.#data.lists[slug] = {name, items:[]};
+		}
+	}
+	async setItem(uuid, data) {
+		if (!('list' in data) || !data.list) throw new Error("Item is missing a list");
+		if (typeof data.list !== 'string') throw new TypeError("Item's list slug is not a string");
+		const previousList = this.#data.items[uuid]?.list;
+		this.#data.items[uuid] = data;
+		if (!(data.list in this.#data.lists)) {
+			this.#data.lists[data.list] = {name: data.list, items: []};
+		}
+		if (data.list !== previousList) {
+			if (previousList in this.#data.lists) {
+				this.#data.lists[previousList].items = this.#data.lists[previousList].items.filter(itemuuid => (itemuuid !== uuid));
+			}
+		}
+		if (!this.#data.lists[data.list].items.includes(uuid)) {
+			this.#data.lists[data.list].items.push(uuid);
 		}
 	}
 }
