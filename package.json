@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest --coverage",
     "start": "node index.js",
     "build": "webpack"
   },
@@ -30,6 +30,13 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "jest": "^27.5.1",
     "webpack-cli": "^4.9.2"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
   }
 }
