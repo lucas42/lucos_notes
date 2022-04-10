@@ -22,6 +22,9 @@ async function handleRequest(request) {
 		const urlparts = url.pathname.split('/');
 		urlparts.shift(); //pathname always starts with a slash, so ignore first part.
 		const component = urlparts.shift();
+		if (!component) {
+			return Response.redirect("/todo/");
+		}
 		if (component === "todo") {
 			const slug = decodeURI(urlparts.shift());
 			if (request.method === "GET") {
