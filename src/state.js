@@ -43,13 +43,10 @@ export default class State {
 			}),
 		}
 	}
-	async setList(slug, name) {
+	async setList(slug, data) {
 		await this.waitUntilDataLoaded;
-		if (slug in this.#data.lists) {
-			this.#data.lists[slug].name = name;
-		} else {
-			this.#data.lists[slug] = {name, items:[]};
-		}
+		data.items = this.#data.lists[slug]?.items || [];
+		this.#data.lists[slug] = data;
 	}
 	async setItem(uuid, data) {
 		if (!('list' in data) || !data.list) throw new Error("Item is missing a list");

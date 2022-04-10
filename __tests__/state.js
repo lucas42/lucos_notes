@@ -85,21 +85,21 @@ describe('Get and set state data', () => {
 	test('Update list with a new name', async () => {
 		const state = getPrepopulatedState();
 
-		state.setList("groceries","Food Shopping");
+		state.setList("groceries", {name:"Food Shopping"});
 		const output = await state.getList('groceries');
 		expect(output.name).toEqual("Food Shopping");
 	});
 	test('Update list with empty name', async () => {
 		const state = getPrepopulatedState();
 
-		state.setList("groceries", "");
+		state.setList("groceries",  {});
 		const output = await state.getList('groceries');
 		expect(output.name).toEqual('groceries');
 	});
 	test('Update non-existant list', async () => {
 		const state = getPrepopulatedState();
 
-		state.setList("newlist", "Brand New List");
+		state.setList("newlist", {name:"Brand New List"});
 		const output = await state.getList('newlist');
 		expect(output.name).toEqual('Brand New List');
 	});
