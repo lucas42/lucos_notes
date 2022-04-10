@@ -4,6 +4,7 @@ const app = express();
 const port = process.env.PORT || 8004;
 import state, {getInfoCheck} from './statefs.js';
 
+app.use(express.json());
 app.use(express.static('./static', {extensions: ['json']}));
 
 app.engine('mustache', mustacheExpress());
@@ -27,7 +28,7 @@ app.get('/todo/:slug', async (req, res, next) => {
 		next(err);
 	}
 });
-app.get('/todo.json', async (req,res, next) => {
+app.get('/todo.json', async (req, res, next) => {
 	try {
 		res
 			.setHeader("Content-Type", "application/json")
@@ -35,6 +36,14 @@ app.get('/todo.json', async (req,res, next) => {
 	} catch (err) {
 		next(err);
 	}
+});
+app.put('/api/list/:slug', async (req, res, next) => {
+	await state.setList(req.params.slug, req.body);
+	res.status(204).send();
+});
+app.put('/api/item/:uuid', async (req, res, next) => {
+	await state.setItem(req.params.uuid, req.body);
+	res.status(204).send();
 });
 
 app.use('/templates', express.static('./templates', {extensions: ['mustache']}));
