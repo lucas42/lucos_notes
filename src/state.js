@@ -43,4 +43,13 @@ export default class State {
 			}),
 		}
 	}
+	async setList(slug, name) {
+		await this.waitUntilDataLoaded;
+		if (!name) name = slug;
+		if (slug in this.#data.lists) {
+			this.#data.lists[slug].name = name;
+		} else {
+			this.#data.lists[slug] = {name, items:[]};
+		}
+	}
 }
