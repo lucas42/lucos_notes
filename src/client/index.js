@@ -6,8 +6,17 @@ controls.id = "controls";
 document.body.append(controls);
 
 
-function newList() {
-	alert("TODO: new list");
+async function newList() {
+	const slug = window.prompt("List Slug");
+	if (!slug) return console.warn("no slug given, giving up");
+	const name = window.prompt("List Name");
+	await fetch('/api/list/'+encodeURIComponent(slug), {
+		method: 'PUT',
+		headers: {
+			'Content-Type': "application/json",
+		},
+		body: JSON.stringify({ name }),
+	});
 }
 
 if (document.body.dataset["type"] == "listoflists") {
