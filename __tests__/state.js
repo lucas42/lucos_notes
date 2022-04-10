@@ -1,5 +1,5 @@
 import {jest} from '@jest/globals'
-import State from '../src/state.js';
+import State from '../src/classes/state.js';
 
 describe('Handle raw state data', () => {
 	test('Set and read the same raw data', async () => {

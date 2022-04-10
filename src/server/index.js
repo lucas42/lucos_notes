@@ -5,7 +5,7 @@ const port = process.env.PORT || 8004;
 import state, {getInfoCheck} from './statefs.js';
 
 app.use(express.json());
-app.use(express.static('./static', {extensions: ['json']}));
+app.use(express.static('./resources', {extensions: ['json']}));
 
 app.engine('mustache', mustacheExpress());
 app.set('view engine', 'mustache');

@@ -1,6 +1,6 @@
 import { readFile, writeFile, unlink } from 'fs/promises';
 import { v4 as uuidv4 } from 'uuid';
-import State from './state.js';
+import State from '../classes/state.js';
 
 // STATE_DIR should be the path of a directory which persists between restarts
 if (!('STATE_DIR' in process.env)) throw new Error('Environment varible STATE_DIR not set');

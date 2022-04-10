@@ -1,4 +1,4 @@
-import State from '../../state.js';
+import State from '../classes/state.js';
 import fetchData from './fetch-state.js';
 import fetchResources from './static-resources.js';
 import { fetchTemplates, populateTemplate } from './templates.js';

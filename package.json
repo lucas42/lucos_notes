@@ -2,11 +2,10 @@
   "name": "lucos_notes",
   "version": "2.0.0",
   "description": "An offline-friendly todo list",
-  "main": "index.js",
   "type": "module",
   "scripts": {
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest --coverage",
-    "start": "node index.js",
+    "start": "node server/index.js",
     "build": "webpack"
   },
   "repository": {
