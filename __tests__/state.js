@@ -54,7 +54,7 @@ describe('Get and set state data', () => {
 			'groceries': {name: "Grocery Shopping", extraneousField: true, items:["abc","123"]},
 			'moarthings': {name: "Even More Stuff", ignoreme:"yes please", metoo: ["of course"], items:[]},
 		}, items:{
-			"123": {"name":"Second Item", extraExtraneousField: true, "list":"groceries"},
+			"123": {"name":"Second Item", extraExtraneousField: true, "list":"groceries", "url": "http://example.com/2nditem"},
 			"abc": {"name":"First Item", ignoreThese:["this", "and this"], "list":"groceries"},
 			"unused": {"name":"Unused Item"},
 		}});
@@ -78,7 +78,7 @@ describe('Get and set state data', () => {
 			name: "Grocery Shopping",
 			items: [
 				{"name":"First Item"},
-				{"name":"Second Item"},
+				{"name":"Second Item", "url": "http://example.com/2nditem"},
 			]
 		});
 	});
@@ -143,5 +143,26 @@ describe('Get and set state data', () => {
 		expect(extraOutput.name).toEqual("extralist");
 		expect(extraOutput.items).toContainEqual({name: "First Item"});
 		expect(extraOutput.items).toHaveLength(1);
+	});
+	test('Add url to item', async () => {
+		const state = getPrepopulatedState();
+
+		state.setItem('abc', {name: "First Item", list: "groceries", url: "https://example.com/1st"});
+		const groceryOutput = await state.getList('groceries');
+		expect(groceryOutput.items[0].url).toEqual("https://example.com/1st");
+	});
+	test('Remove url from item', async () => {
+		const state = getPrepopulatedState();
+
+		state.setItem('123', {name: "Second Item", list: "groceries"});
+		const groceryOutput = await state.getList('groceries');
+		expect(groceryOutput.items[1].url).toBeFalsy();
+	});
+	test('Modify url of item', async () => {
+		const state = getPrepopulatedState();
+
+		state.setItem('123', {name: "Second Item", list: "groceries", url: "https://example.com/new2nditem"});
+		const groceryOutput = await state.getList('groceries');
+		expect(groceryOutput.items[1].url).toEqual("https://example.com/new2nditem");
 	});
 });

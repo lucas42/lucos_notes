@@ -39,7 +39,7 @@ export default class State {
 			name: this.#data.lists[slug].name || slug,
 			items: this.#data.lists[slug].items.map(uuid => {
 				const item = this.#data.items[uuid];
-				return {name: item.name};
+				return {name: item.name, url: item.url};
 			}),
 		}
 	}
