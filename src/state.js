@@ -1,10 +1,11 @@
 export default class State {
 	#data;
-	constructor() {
+	constructor(syncFunction = () => {}) {
 		const state = this;
 		state.waitUntilDataLoaded = new Promise((resolve, reject) => {
 			state.dataLoaded = resolve;
 		});
+		state.syncFunction = syncFunction;
 	}
 	setRawData(rawData) {
 		if (!('lists' in rawData)) throw new Error("No 'lists' field in raw data");
@@ -47,6 +48,7 @@ export default class State {
 		await this.waitUntilDataLoaded;
 		data.items = this.#data.lists[slug]?.items || [];
 		this.#data.lists[slug] = data;
+		await this.syncFunction();
 	}
 	async setItem(uuid, data) {
 		if (!('list' in data) || !data.list) throw new Error("Item is missing a list");
@@ -64,5 +66,6 @@ export default class State {
 		if (!this.#data.lists[data.list].items.includes(uuid)) {
 			this.#data.lists[data.list].items.push(uuid);
 		}
+		await this.syncFunction();
 	}
 }

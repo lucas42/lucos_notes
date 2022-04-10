@@ -1,3 +1,4 @@
+import {jest} from '@jest/globals'
 import State from '../src/state.js';
 
 describe('Handle raw state data', () => {
@@ -164,5 +165,33 @@ describe('Get and set state data', () => {
 		state.setItem('123', {name: "Second Item", list: "groceries", url: "https://example.com/new2nditem"});
 		const groceryOutput = await state.getList('groceries');
 		expect(groceryOutput.items[1].url).toEqual("https://example.com/new2nditem");
+	});
+});
+
+describe('Sync function', () => {
+	test('Sync function gets called after list setting', async () => {
+		const syncFunction = jest.fn();
+		const state = new State(syncFunction);
+		state.setRawData({lists:{}, items:{}});
+		expect(syncFunction.mock.calls.length).toBe(0);
+		await state.setList('newlist', {name: "New List"});
+		expect(syncFunction.mock.calls.length).toBe(1);
+	});
+	test('Sync function gets called after item setting', async () => {
+		const syncFunction = jest.fn();
+		const state = new State(syncFunction);
+		state.setRawData({lists:{}, items:{}});
+		expect(syncFunction.mock.calls.length).toBe(0);
+		await state.setItem('abc', {name: "New Item", list:'newlist'});
+		expect(syncFunction.mock.calls.length).toBe(1);
+	});
+	test('Sync function doesnt get called during getters', async () => {
+		const syncFunction = jest.fn();
+		const state = new State(syncFunction);
+		state.setRawData({lists:{'groceries':{items:[]}}, items:{}});
+		await state.getRawData();
+		await state.getLists();
+		await state.getList('groceries');
+		expect(syncFunction.mock.calls.length).toBe(0);
 	});
 });
