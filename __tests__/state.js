@@ -96,6 +96,9 @@ describe('Get and set state data', () => {
 		state.setList("groceries",  {});
 		const output = await state.getList('groceries');
 		expect(output.name).toEqual('groceries');
+
+		const indexOutput = await state.getLists();
+		expect(indexOutput.lists[0].name).toEqual('groceries');
 	});
 	test('Update non-existant list', async () => {
 		const state = getPrepopulatedState();

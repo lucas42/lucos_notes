@@ -17,8 +17,15 @@ nav a:hover { text-decoration: underline; }
 }
 #todo > li > *.deleted { text-decoration: line-through; opacity: 0.5; }
 #todo > li { margin: 0.2em 2em; padding: 0.2em; border-bottom: solid thin #AAF; text-overflow: ellipsis; overflow: hidden; }
-#todo > .list > a { padding: 0.5em; }
 #todo > .list > a, #todo > .list input { text-decoration: none; color: inherit; font-weight: bold; }
+#todo > .list > .pencil {
+  cursor: pointer;
+  color: #99a;
+}
+#todo > .list > .pencil:hover {
+  font-weight: bold;
+  color: #007;
+}
 #todo > li.spare { list-style: none; border-bottom: none; height: 1em; }
 .inlineform { display: inline; }
 .inlineform input { border: none; background: inherit; color: inherit; font: inherit; margin: 0; width: 100%; }

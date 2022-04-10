@@ -28,7 +28,7 @@ export default class State {
 		for (const slug in this.#data.lists) {
 			lists.push({
 				slug,
-				name: this.#data.lists[slug].name,
+				name: this.#data.lists[slug].name || slug,
 			});
 		}
 		return {lists};

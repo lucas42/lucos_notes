@@ -14,7 +14,7 @@
 		<lucos-navbar font="'Reenie Beanie', Textile, cursive">Todo List</lucos-navbar>
 		<ul id="todo" class="lists">
 			{{#lists}}
-				<li class="list">
+				<li class="list" data-slug="{{slug}}" data-name="{{name}}">
 					<a href="/todo/{{slug}}">{{name}}</a>
 				</li>
 			{{/lists}}
