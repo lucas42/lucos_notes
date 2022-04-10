@@ -1,36 +1,40 @@
-import * as fs from 'fs';
+import { readFile, writeFile, unlink } from 'fs/promises';
 import { v4 as uuidv4 } from 'uuid';
 import State from './state.js';
-let STATE_FILE;
+
+// STATE_DIR should be the path of a directory which persists between restarts
+if (!('STATE_DIR' in process.env)) throw new Error('Environment varible STATE_DIR not set');
+const STATE_FILE = `${process.env.STATE_DIR}/data_v2.json`;
 const state = new State();
-state.setRawData(readFromFS());
 
+async function init() {
+	const rawData = await readFromFS();
+	state.setRawData(rawData);
+}
 
-function readFromFS() {
-	// STATE_DIR should be the path of a directory which persists between restarts
-	if (!('STATE_DIR' in process.env)) throw new Error('Environment varible STATE_DIR not set');
+init();
+
+async function readFromFS() {
 	try {
-		STATE_FILE = `${process.env.STATE_DIR}/data_v2.json`;
-		return JSON.parse(fs.readFileSync(STATE_FILE));
+		return JSON.parse(await readFile(STATE_FILE));
 	} catch (err) {
 		console.log(`Can't find or parse data_v2.json; Trying to convert v1 data`, err);
 		return v2Migration(process.env.STATE_DIR);
 	}
 }
 
-function writeToFS() {
-	fs.unlink(STATE_FILE, async function(unlinkErr) {
-		fs.writeFile(STATE_FILE, JSON.stringify(await state.getRawData()), function(writeErr) {
-			if (writeErr) {
-				console.error("Error saving state:", writeErr.message);
-			}
-		});
-	});
+async function writeToFS() {
+	try {
+		await unlink(STATE_FILE);
+		await writeFile(STATE_FILE, JSON.stringify(await state.getRawData()));
+	} catch (error) {
+		console.error("Error saving state:", error);
+	}
 }
 
-export function getInfoCheck() {
+export async function getInfoCheck() {
 	try {
-		readFromFS();
+		await readFromFS();
 		return {
 			techDetail: `Reads ${STATE_FILE} from file system`,
 			ok: true,
@@ -47,10 +51,10 @@ export function getInfoCheck() {
 /**
  * Transforms the state file format used in v1 to the v2 format
  **/
-function v2Migration (STATE_DIR) {
+async function v2Migration (STATE_DIR) {
 	try {
 		const V1_STATE_FILE = `${STATE_DIR}/data.json`;
-		const v1Data = JSON.parse(fs.readFileSync(V1_STATE_FILE));
+		const v1Data = JSON.parse(await readFile(V1_STATE_FILE));
 		const data = {
 			lists: {},
 			items: {},
@@ -124,7 +128,6 @@ function v2Migration (STATE_DIR) {
 			delete data.lists[list].unsorted_items;
 		}
 		return data;
-		// writeToFS();
 	} catch (err) {
 		console.log(`Failed to transform v1 state file`, err);
 	}
