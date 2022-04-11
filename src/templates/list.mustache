@@ -17,7 +17,7 @@
 		</nav>
 		<ul id="todo">
 			{{#items}}
-			<li>
+			<li class="item" data-uuid="{{uuid}}" data-name="{{name}}" data-url="{{url}}" data-list="{{slug}}">
 				{{#url}}<a href="{{url}}" target="__blank">{{name}}</a>{{/url}}
 				{{^url}}<span>{{name}}</span>{{/url}}
 			</li>

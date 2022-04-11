@@ -2,13 +2,16 @@
 async function editList(slug, oldName) {
 	const name = window.prompt("List Name", oldName || slug);
 	if (name === null) return;
-	await fetch('/api/list/'+encodeURIComponent(slug), {
+	const resp = await fetch('/api/list/'+encodeURIComponent(slug), {
 		method: 'PUT',
 		headers: {
 			'Content-Type': "application/json",
 		},
 		body: JSON.stringify({ name }),
 	});
+	if (!resp.ok) {
+		alert("Failed to update Item");
+	}
 }
 
 export function newListButton(parentElement) {

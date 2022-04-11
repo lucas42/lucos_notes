@@ -6,7 +6,7 @@ nav a:hover { text-decoration: underline; }
 #controls * { background-color: black; background-image: -webkit-gradient(linear, 0 100%, 0 0, color-stop(0, transparent), color-stop(0.15, transparent), color-stop(0.9, rgba(255, 255, 255, 0.4))); color: #fff; border-radius: 1em; padding: 0 1em; margin: 0 1em; font-family: 'Reenie Beanie', Textile, cursive; font-size: 25px; font-weight: bold; border: none; }
 #controls *:active { background-image: -webkit-gradient(linear, 0 0, 0 100%, color-stop(0, transparent), color-stop(0.15, transparent), color-stop(0.9, rgba(255, 255, 255, 0.4))); }
 #controls { text-align: center; clear: right; padding-top: 0.2em; height: 1.8em; display: block; overflow: hidden; }
-#todo { margin: 0; padding: 1em; background: #edb; color: #333; border-radius: 2px; -webkit-box-shadow: 5px 5px 10px 0px #000; margin-bottom: 10px; }
+#todo { margin: 0; padding: 1.5em 2em 2em; background: #edb; color: #333; border-radius: 2px; -webkit-box-shadow: 5px 5px 10px 0px #000; margin-bottom: 10px; }
 #todo a {
   text-decoration: none;
   font-style: italic;
@@ -16,7 +16,7 @@ nav a:hover { text-decoration: underline; }
   text-decoration: underline;
 }
 #todo > li > *.deleted { text-decoration: line-through; opacity: 0.5; }
-#todo > li { margin: 0.2em 2em; padding: 0.2em; border-bottom: solid thin #AAF; text-overflow: ellipsis; overflow: hidden; }
+#todo > li { padding: 0.3em; border-bottom: solid thin #AAF; text-overflow: ellipsis; overflow: hidden; }
 #todo > .list > a, #todo > .list input { text-decoration: none; color: inherit; font-weight: bold; }
 #todo > .list > .pencil {
   cursor: pointer;
