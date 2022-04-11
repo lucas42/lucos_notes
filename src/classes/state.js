@@ -8,11 +8,11 @@ export default class State {
 		state.syncFunction = syncFunction;
 	}
 	setRawData(rawData) {
-		if (!('lists' in rawData)) throw new Error("No 'lists' field in raw data");
-		if (typeof rawData.lists !== 'object') throw new TypeError("'lists' field in raw data isn't an object");
-		if (Array.isArray(rawData.lists)) throw new TypeError("'lists' field in raw data is an array");
-		if (!('items' in rawData)) throw new Error("No 'items' field in raw data");
-		if (typeof rawData.items !== 'object') throw new TypeError("'items' field in raw data isn't an object");
+		if (!('lists' in rawData)) throw new ValidationError("No 'lists' field in raw data");
+		if (typeof rawData.lists !== 'object') throw new ValidationError("'lists' field in raw data isn't an object");
+		if (Array.isArray(rawData.lists)) throw new ValidationError("'lists' field in raw data is an array");
+		if (!('items' in rawData)) throw new ValidationError("No 'items' field in raw data");
+		if (typeof rawData.items !== 'object') throw new ValidationError("'items' field in raw data isn't an object");
 		this.#data = rawData;
 		this.dataLoaded(true);
 	}
@@ -35,7 +35,7 @@ export default class State {
 	}
 	async getList(slug) {
 		await this.waitUntilDataLoaded;
-		if (!(slug in this.#data.lists)) throw new Error(`Can't find list '${slug}'`);
+		if (!(slug in this.#data.lists)) throw new NotFoundError(`Can't find list '${slug}'`);
 		return {
 			name: this.#data.lists[slug].name || slug,
 			items: this.#data.lists[slug].items.map(uuid => {
@@ -51,8 +51,8 @@ export default class State {
 		await this.syncFunction();
 	}
 	async setItem(uuid, data) {
-		if (!('list' in data) || !data.list) throw new Error("Item is missing a list");
-		if (typeof data.list !== 'string') throw new TypeError("Item's list slug is not a string");
+		if (!('list' in data) || !data.list) throw new ValidationError("Item is missing a list");
+		if (typeof data.list !== 'string') throw new ValidationError("Item's list slug is not a string");
 		const previousList = this.#data.items[uuid]?.list;
 		this.#data.items[uuid] = data;
 		if (!(data.list in this.#data.lists)) {
@@ -69,3 +69,6 @@ export default class State {
 		await this.syncFunction();
 	}
 }
+
+export class ValidationError extends Error { }
+export class NotFoundError extends Error { }

@@ -1,5 +1,5 @@
 import {jest} from '@jest/globals'
-import State from '../src/classes/state.js';
+import {default as State, ValidationError, NotFoundError} from '../src/classes/state.js';
 
 describe('Handle raw state data', () => {
 	test('Set and read the same raw data', async () => {
@@ -21,17 +21,17 @@ describe('Handle raw state data', () => {
 		// Missing lists field
 		expect(() => {
 			state.setRawData({listicles:{groceries:{name: "Grocery Shopping"}}, items:{}});
-		}).toThrow(Error);
+		}).toThrow(ValidationError);
 
 		// Lists field is array
 		expect(() => {
 			state.setRawData({lists:[{slug:'groceries',name: "Grocery Shopping"}], items:{}});
-		}).toThrow(TypeError);
+		}).toThrow(ValidationError);
 
 		// Lists field is integer
 		expect(() => {
 			state.setRawData({lists:7, items:{}});
-		}).toThrow(TypeError);
+		}).toThrow(ValidationError);
 	});
 	test('Raw data with no items object fails', () => {
 		const state = new State();
@@ -39,12 +39,12 @@ describe('Handle raw state data', () => {
 		// Missing lists field
 		expect(() => {
 			state.setRawData({itum:{}, lists:{}});
-		}).toThrow(Error);
+		}).toThrow(ValidationError);
 
 		// Lists field of wrong type
 		expect(() => {
 			state.setRawData({items:"items go here", lists:{}});
-		}).toThrow(TypeError);
+		}).toThrow(ValidationError);
 	});
 });
 
@@ -72,6 +72,7 @@ describe('Get and set state data', () => {
 	});
 	test('Get a list in a format usable for templates', async	() => {
 		const state = getPrepopulatedState();
+		expect(state.getList('missing list')).rejects.toThrow(NotFoundError);
 		expect(state.getList('missing list')).rejects.toThrow("Can't find list 'missing list'");
 
 		const output = await state.getList('groceries');
@@ -133,8 +134,11 @@ describe('Get and set state data', () => {
 	test('Set Listless Item', async () => {
 		const state = getPrepopulatedState();
 
+		expect(state.setItem("abc", {name:"Third Item"})).rejects.toThrow(ValidationError);
 		expect(state.setItem("abc", {name:"Third Item"})).rejects.toThrow("Item is missing a list");
+		expect(state.setItem("abc", {name:"Third Item", list: ""})).rejects.toThrow(ValidationError);
 		expect(state.setItem("abc", {name:"Third Item", list: ""})).rejects.toThrow("Item is missing a list");
+		expect(state.setItem("abc", {name:"Third Item", list: []})).rejects.toThrow(ValidationError);
 		expect(state.setItem("abc", {name:"Third Item", list: []})).rejects.toThrow("Item's list slug is not a string");
 	});
 	test('Move item to non-existant list', async () => {
