@@ -17,12 +17,14 @@
 		</nav>
 		<ul id="todo">
 			{{#items}}
-			<li class="item" data-uuid="{{uuid}}" data-name="{{name}}" data-url="{{url}}" data-list="{{slug}}">
+			<li class="item">
+				<edit-item uuid="{{uuid}}" name="{{name}}" url="{{url}}" list="{{slug}}"></edit-item>
 				{{#url}}<a href="{{url}}" target="__blank">{{name}}</a>{{/url}}
 				{{^url}}<span>{{name}}</span>{{/url}}
 			</li>
 			{{/items}}
 		</ul>
+		<div id="controls"><new-item-button list="{{slug}}"></new-item-button></div>
 		<script type="text/javascript" src="/client.js"></script>
 	</body>
 </html>

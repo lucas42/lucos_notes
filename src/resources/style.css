@@ -19,21 +19,6 @@ nav a {
 nav a:hover {
 	text-decoration: underline;
 }
-#controls * {
-	background-color: black;
-	background-image: -webkit-gradient(linear, 0 100%, 0 0, color-stop(0, transparent), color-stop(0.15, transparent), color-stop(0.9, rgba(255, 255, 255, 0.4)));
-	color: #fff;
-	border-radius: 1em;
-	padding: 0 1em;
-	margin: 0 1em;
-	font-family: 'Reenie Beanie', Textile, cursive;
-	font-size: 25px;
-	font-weight: bold;
-	border: none;
-}
-#controls *:active {
-	background-image: -webkit-gradient(linear, 0 0, 0 100%, color-stop(0, transparent), color-stop(0.15, transparent), color-stop(0.9, rgba(255, 255, 255, 0.4)));
-}
 #controls {
 	text-align: center;
 	clear: right;
@@ -74,14 +59,6 @@ nav a:hover {
 	text-decoration: none;
 	color: inherit;
 	font-weight: bold;
-}
-.pencil {
-	cursor: pointer;
-	color: #99a;
-}
-.pencil:hover {
-	font-weight: bold;
-	color: #007;
 }
 #todo>li.spare {
 	list-style: none;

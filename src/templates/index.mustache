@@ -14,11 +14,13 @@
 		<lucos-navbar font="'Reenie Beanie', Textile, cursive">Todo List</lucos-navbar>
 		<ul id="todo" class="lists">
 			{{#lists}}
-				<li class="list" data-slug="{{slug}}" data-name="{{name}}">
+				<li class="list">
+					<edit-list slug="{{slug}}" name="{{name}}"></edit-list>
 					<a href="/todo/{{slug}}">{{name}}</a>
 				</li>
 			{{/lists}}
 		</ul>
+		<div id="controls"><new-list-button></new-list-button></div>
 		<script type="text/javascript" src="/client.js"></script>
 	</body>
 </html>
