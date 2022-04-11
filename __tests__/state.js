@@ -77,6 +77,7 @@ describe('Get and set state data', () => {
 
 		const output = await state.getList('groceries');
 		expect(output).toEqual({
+			slug: "groceries",
 			name: "Grocery Shopping",
 			items: [
 				{"name":"First Item", "uuid": "abc"},

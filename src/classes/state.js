@@ -37,6 +37,7 @@ export default class State {
 		await this.waitUntilDataLoaded;
 		if (!(slug in this.#data.lists)) throw new NotFoundError(`Can't find list '${slug}'`);
 		return {
+			slug,
 			name: this.#data.lists[slug].name || slug,
 			items: this.#data.lists[slug].items.map(uuid => {
 				const item = this.#data.items[uuid];
