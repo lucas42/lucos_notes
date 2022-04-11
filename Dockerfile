@@ -7,10 +7,10 @@ RUN npm install
 
 COPY src .
 
-## Run the build step and delete everything only used for build afterwards
+## Run the build step and then delete everything which only gets used for the build
 RUN npm run build
 RUN npm prune --production
-RUN rm -rf clientjs
+RUN rm -rf client service-worker webpack*
 
 ENV NODE_ENV production
 ENV PORT 8004
