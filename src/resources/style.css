@@ -75,11 +75,11 @@ nav a:hover {
 	color: inherit;
 	font-weight: bold;
 }
-#todo>.list>.pencil {
+.pencil {
 	cursor: pointer;
 	color: #99a;
 }
-#todo>.list>.pencil:hover {
+.pencil:hover {
 	font-weight: bold;
 	color: #007;
 }
