@@ -78,8 +78,8 @@ describe('Get and set state data', () => {
 		expect(output).toEqual({
 			name: "Grocery Shopping",
 			items: [
-				{"name":"First Item"},
-				{"name":"Second Item", "url": "http://example.com/2nditem"},
+				{"name":"First Item", "uuid": "abc"},
+				{"name":"Second Item", "url": "http://example.com/2nditem", "uuid": "123"},
 			]
 		});
 	});
@@ -112,7 +112,7 @@ describe('Get and set state data', () => {
 
 		state.setItem("abc", {name:"The First Item", irrelevantField: "hi 👋", list:"groceries"});
 		const output = await state.getList('groceries');
-		expect(output.items[0]).toEqual({name: "The First Item"});
+		expect(output.items[0]).toEqual({name: "The First Item", uuid: "abc"});
 	});
 	test('Move item to different list', async () => {
 		const state = getPrepopulatedState();
@@ -120,15 +120,15 @@ describe('Get and set state data', () => {
 		state.setItem("abc", {name:"First Item", irrelevantField: "hi 👋", list:"moarthings"});
 		const groceryOutput = await state.getList('groceries');
 		const moarOutput = await state.getList('moarthings');
-		expect(groceryOutput.items).not.toContainEqual({name: "First Item"});
-		expect(moarOutput.items).toContainEqual({name: "First Item"});
+		expect(groceryOutput.items).not.toContainEqual({name: "First Item", uuid: "abc"});
+		expect(moarOutput.items).toContainEqual({name: "First Item", uuid: "abc"});
 	});
 	test('Create new Item', async () => {
 		const state = getPrepopulatedState();
 
 		state.setItem("xyz", {name:"Third Item", otherField: true, list:"groceries"});
 		const output = await state.getList('groceries');
-		expect(output.items[2]).toEqual({name: "Third Item"});
+		expect(output.items[2]).toEqual({name: "Third Item", uuid:"xyz"});
 	});
 	test('Set Listless Item', async () => {
 		const state = getPrepopulatedState();
@@ -143,9 +143,9 @@ describe('Get and set state data', () => {
 		state.setItem("abc", {name:"First Item", irrelevantField: "hi 👋", list:"extralist"});
 		const groceryOutput = await state.getList('groceries');
 		const extraOutput = await state.getList('extralist');
-		expect(groceryOutput.items).not.toContainEqual({name: "First Item"});
+		expect(groceryOutput.items).not.toContainEqual({name: "First Item", uuid: "abc"});
 		expect(extraOutput.name).toEqual("extralist");
-		expect(extraOutput.items).toContainEqual({name: "First Item"});
+		expect(extraOutput.items).toContainEqual({name: "First Item", uuid: "abc"});
 		expect(extraOutput.items).toHaveLength(1);
 	});
 	test('Add url to item', async () => {
