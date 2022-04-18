@@ -65,10 +65,13 @@ describe('Get and set state data', () => {
 	test('Get a list of lists in a format usable for templates', async	() => {
 		const state = getPrepopulatedState();
 		const output = await state.getLists();
-		expect(output).toEqual({lists:[
-			{slug:'groceries',name: "Grocery Shopping"},
-			{slug:'moarthings',name: "Even More Stuff"},
-		]});
+		expect(output).toEqual({
+			lists:[
+				{slug:'groceries',name: "Grocery Shopping"},
+				{slug:'moarthings',name: "Even More Stuff"},
+			],
+			hasUnsyncedData: false,
+		});
 	});
 	test('Get a list in a format usable for templates', async	() => {
 		const state = getPrepopulatedState();
@@ -82,7 +85,8 @@ describe('Get and set state data', () => {
 			items: [
 				{"name":"First Item", "uuid": "abc"},
 				{"name":"Second Item", "url": "http://example.com/2nditem", "uuid": "123"},
-			]
+			],
+			hasUnsyncedData: false,
 		});
 	});
 	test('Update list with a new name', async () => {
@@ -201,5 +205,49 @@ describe('Sync function', () => {
 		await state.getLists();
 		await state.getList('groceries');
 		expect(syncFunction.mock.calls.length).toBe(0);
+	});
+});
+
+describe('Check for unsynced data', () => {
+	test('With no sync function, data only counts as synced when new raw data is set', async () => {
+		const state = new State();
+		state.setRawData({lists:{}, items:{}});
+		expect((await state.getLists()).hasUnsyncedData).toBe(false);
+		await state.setItem('abc', {name: "New Item", list:'newlist'});
+		expect((await state.getLists()).hasUnsyncedData).toBe(true);
+		state.setRawData({lists:{'newlist':{items:['abc']}}, items:{'abc': {name: "New Item", list:'newlist'}}});
+		expect((await state.getLists()).hasUnsyncedData).toBe(false);
+	});
+	test('With sync function, data counts as synced once function is completed succesfully', async () => {
+		let resolvePromise, rejectPromise;
+		const promise = new Promise((resolve, reject) => {
+			resolvePromise = resolve;
+			rejectPromise = reject;
+		});
+		const syncFunction = jest.fn(() => promise);
+		const state = new State(syncFunction);
+		state.setRawData({lists:{}, items:{}});
+		expect((await state.getLists()).hasUnsyncedData).toBe(false);
+		const setItemPromise = state.setItem('abc', {name: "New Item", list:'newlist'});
+		expect((await state.getLists()).hasUnsyncedData).toBe(true);
+		resolvePromise(true);
+		await setItemPromise;
+		expect((await state.getLists()).hasUnsyncedData).toBe(false);
+	});
+	test('With sync function, data counts as unsynced if function fails', async () => {
+		let resolvePromise, rejectPromise;
+		const promise = new Promise((resolve, reject) => {
+			resolvePromise = resolve;
+			rejectPromise = reject;
+		});
+		const syncFunction = jest.fn(() => promise);
+		const state = new State(syncFunction);
+		state.setRawData({lists:{}, items:{}});
+		expect((await state.getLists()).hasUnsyncedData).toBe(false);
+		const setItemPromise = state.setItem('abc', {name: "New Item", list:'newlist'});
+		expect((await state.getLists()).hasUnsyncedData).toBe(true);
+		rejectPromise(false);
+		await setItemPromise;
+		expect((await state.getLists()).hasUnsyncedData).toBe(true);
 	});
 });

@@ -32,6 +32,9 @@ export async function modifyStateWithRequest(state, request) {
 				throw new Error(`Unsupported method for items ${request.method}`);
 			}
 			break;
+		case 'sync':
+			// Inert call to trigger syncRequests() being called without side-effects
+			break;
 		default:
 			throw new Error(`Unknown type ${objectType}`);
 	}

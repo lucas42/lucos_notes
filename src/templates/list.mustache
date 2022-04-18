@@ -24,7 +24,10 @@
 			</li>
 			{{/items}}
 		</ul>
-		<div id="controls"><new-item-button list="{{slug}}"></new-item-button></div>
+		<div id="controls">
+			<new-item-button list="{{slug}}"></new-item-button>
+			{{#hasUnsyncedData}}<sync-button></sync-button>{{/hasUnsyncedData}}
+		</div>
 		<script type="text/javascript" src="/client.js"></script>
 	</body>
 </html>

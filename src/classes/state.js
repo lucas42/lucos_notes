@@ -1,11 +1,19 @@
 export default class State {
 	#data;
-	constructor(syncFunction = () => {}) {
-		const state = this;
-		state.waitUntilDataLoaded = new Promise((resolve, reject) => {
-			state.dataLoaded = resolve;
+	#hasUnsyncedData;
+	constructor(syncFunction) {
+		this.waitUntilDataLoaded = new Promise((resolve, reject) => {
+			this.dataLoaded = resolve;
 		});
-		state.syncFunction = syncFunction;
+		this.syncFunction = async () => {
+			if (!syncFunction) return;
+			try {
+				await syncFunction();
+				this.#hasUnsyncedData = false;
+			} catch(error) {
+				// If the sync failed, don't update this.#hasUnsyncedData
+			}
+		}
 	}
 	setRawData(rawData) {
 		if (!('lists' in rawData)) throw new ValidationError("No 'lists' field in raw data");
@@ -14,6 +22,7 @@ export default class State {
 		if (!('items' in rawData)) throw new ValidationError("No 'items' field in raw data");
 		if (typeof rawData.items !== 'object') throw new ValidationError("'items' field in raw data isn't an object");
 		this.#data = rawData;
+		this.#hasUnsyncedData = false;
 		this.dataLoaded(true);
 	}
 
@@ -31,7 +40,10 @@ export default class State {
 				name: this.#data.lists[slug].name || slug,
 			});
 		}
-		return {lists};
+		return {
+			lists,
+			hasUnsyncedData: this.#hasUnsyncedData,
+		};
 	}
 	async getList(slug) {
 		await this.waitUntilDataLoaded;
@@ -43,12 +55,14 @@ export default class State {
 				const item = this.#data.items[uuid];
 				return {uuid, name: item.name, url: item.url};
 			}),
+			hasUnsyncedData: this.#hasUnsyncedData,
 		}
 	}
 	async setList(slug, data) {
 		await this.waitUntilDataLoaded;
 		data.items = this.#data.lists[slug]?.items || [];
 		this.#data.lists[slug] = data;
+		this.#hasUnsyncedData = true;
 		await this.syncFunction();
 	}
 	async setItem(uuid, data) {
@@ -67,6 +81,7 @@ export default class State {
 		if (!this.#data.lists[data.list].items.includes(uuid)) {
 			this.#data.lists[data.list].items.push(uuid);
 		}
+		this.#hasUnsyncedData = true;
 		await this.syncFunction();
 	}
 }
