@@ -2,6 +2,8 @@ import State from '../classes/state.js';
 import fetchData from './fetch-state.js';
 import fetchResources from './static-resources.js';
 import { fetchTemplates, populateTemplate } from './templates.js';
+import { queueAndAttemptRequest } from './restful-queue.js';
+import { modifyStateWithRequest } from './modify-state.js';
 
 const state = new State();
 
@@ -24,6 +26,12 @@ async function handleRequest(request) {
 		const component = urlparts.shift();
 		if (!component) {
 			return Response.redirect("/todo/");
+		}
+
+		// Any non-GET api calls, we should queue up and send when there's network
+		if (component === 'api' && request.method !== 'GET') {
+			await modifyStateWithRequest(state, request.clone());
+			return queueAndAttemptRequest(request);
 		}
 		if (component === "todo") {
 			const slug = decodeURI(urlparts.shift());

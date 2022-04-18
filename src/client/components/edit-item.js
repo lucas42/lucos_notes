@@ -7,6 +7,7 @@ async function editItem(uuid, list, oldName, oldUrl) {
 	if (name === null) return;
 	const url = window.prompt("URL", oldUrl);
 	if (url === null) return;
+	// TODO: show loading spinner/hold screen
 	const resp = await fetch('/api/item/'+encodeURIComponent(uuid), {
 		method: 'PUT',
 		headers: {
@@ -14,7 +15,9 @@ async function editItem(uuid, list, oldName, oldUrl) {
 		},
 		body: JSON.stringify({ name, url, list }),
 	});
-	if (!resp.ok) {
+	if (resp.ok) {
+		location.reload();
+	} else {
 		alert("Failed to update Item");
 	}
 }

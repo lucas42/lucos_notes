@@ -4,6 +4,7 @@ import ControlButton from './control-button.js';
 async function editList(slug, oldName) {
 	const name = window.prompt("List Name", oldName || slug);
 	if (name === null) return;
+	// TODO: show loading spinner/hold screen
 	const resp = await fetch('/api/list/'+encodeURIComponent(slug), {
 		method: 'PUT',
 		headers: {
@@ -11,8 +12,10 @@ async function editList(slug, oldName) {
 		},
 		body: JSON.stringify({ name }),
 	});
-	if (!resp.ok) {
-		alert("Failed to update Item");
+	if (resp.ok) {
+		location.reload();
+	} else {
+		alert("Failed to update List");
 	}
 }
 

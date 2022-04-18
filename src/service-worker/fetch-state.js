@@ -1,3 +1,5 @@
+import { modifyStateWithOutstandingRequests } from './modify-state.js';
+
 const DATA_CACHE = 'data-v1';
 
 /**
@@ -11,10 +13,12 @@ export default async function fetchData(state) {
 	const cachedResponse = await cache.match(request);
 	if (cachedResponse) {
 		state.setRawData(await cachedResponse.json());
+		await modifyStateWithOutstandingRequests(state);
 	}
 	const networkResponse = await fetch(request);
 	if (networkResponse.ok) {
-		state.setRawData(await networkResponse.clone().json());
-		cache.put(request, networkResponse);
+		cache.put(request, networkResponse.clone());
+		state.setRawData(await networkResponse.json());
+		await modifyStateWithOutstandingRequests(state);
 	}
 }
