@@ -50,7 +50,7 @@ describe('Handle raw state data', () => {
 
 describe('Get and set state data', () => {
 	function getPrepopulatedState() {
-		const state = new State();
+		const state = new State(() => {});
 		state.setRawData({lists:{
 			'groceries': {name: "Grocery Shopping", extraneousField: true, items:["abc","123"]},
 			'moarthings': {name: "Even More Stuff", ignoreme:"yes please", metoo: ["of course"], items:[]},
@@ -215,8 +215,14 @@ describe('Check for unsynced data', () => {
 		expect((await state.getLists()).hasUnsyncedData).toBe(false);
 		await state.setItem('abc', {name: "New Item", list:'newlist'});
 		expect((await state.getLists()).hasUnsyncedData).toBe(true);
+		expect((await state.getLists()).lists[0]).toHaveProperty('unsynced', true);
+		expect((await state.getList('newlist'))).toHaveProperty('unsynced', true);
+		expect((await state.getList('newlist')).items[0]).toHaveProperty('unsynced', true);
 		state.setRawData({lists:{'newlist':{items:['abc']}}, items:{'abc': {name: "New Item", list:'newlist'}}});
 		expect((await state.getLists()).hasUnsyncedData).toBe(false);
+		expect((await state.getLists()).lists[0]).toHaveProperty('unsynced', undefined);
+		expect((await state.getList('newlist'))).toHaveProperty('unsynced', undefined);
+		expect((await state.getList('newlist')).items[0]).toHaveProperty('unsynced', undefined);
 	});
 	test('With sync function, data counts as synced once function is completed succesfully', async () => {
 		let resolvePromise, rejectPromise;
