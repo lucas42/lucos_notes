@@ -76,6 +76,10 @@ nav a:hover {
 	margin: 0;
 	width: 100%;
 }
+.pending {
+	color: #954;
+	cursor: default;
+}
 @font-face {
 	font-family: 'Reenie Beanie';
 	font-style: normal;

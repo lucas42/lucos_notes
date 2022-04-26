@@ -17,6 +17,7 @@
 				<li class="list">
 					<edit-list slug="{{slug}}" name="{{name}}"></edit-list>
 					<a href="/todo/{{slug}}">{{name}}</a>
+					{{#unsynced}}<span class="pending" title="Sync pending">⌁</span>{{/unsynced}}
 				</li>
 			{{/lists}}
 		</ul>

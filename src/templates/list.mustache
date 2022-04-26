@@ -21,6 +21,7 @@
 				<edit-item uuid="{{uuid}}" name="{{name}}" url="{{url}}" list="{{slug}}"></edit-item>
 				{{#url}}<a href="{{url}}" target="__blank">{{name}}</a>{{/url}}
 				{{^url}}<span>{{name}}</span>{{/url}}
+				{{#unsynced}}<span class="pending" title="Sync pending">⌁</span>{{/unsynced}}
 			</li>
 			{{/items}}
 		</ul>
