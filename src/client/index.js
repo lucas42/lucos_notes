@@ -1,4 +1,4 @@
-import './components/lucos-navbar.js';
+import 'lucos_navbar';
 import './components/edit-list.js';
 import './components/edit-item.js';
 import './components/sync-button.js';
