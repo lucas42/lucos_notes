@@ -52,7 +52,7 @@ async function queueRequest(request) {
  * @returns {Promise.<Response>} A promise which resolves with the requests response following removal from the queue (or rejects on failure)
  */
 async function attemptRequest(requestid, request) {
-	const response = fetch(request);
+	const response = await fetch(request);
 	await removeFromQueue(requestid);
 	return response;
 }
