@@ -2,7 +2,7 @@ import State from '../classes/state.js';
 import fetchData from './fetch-state.js';
 import fetchResources from './static-resources.js';
 import { fetchTemplates, populateTemplate } from './templates.js';
-import { queueAndAttemptRequest } from './restful-queue.js';
+import { queueAndAttemptRequest, syncRequests } from 'restful-queue';
 import { modifyStateWithRequest } from './modify-state.js';
 
 const state = new State();
@@ -26,6 +26,14 @@ async function handleRequest(request) {
 		const component = urlparts.shift();
 		if (!component) {
 			return Response.redirect("/todo/");
+		}
+		if (component === 'sync' && request.method === 'POST') {
+			try {
+				await syncRequests();
+				return new Response(null, {status: 204, statusText: "Successful Sync"});
+			} catch (error) {
+				return new Response(null, {status: 500, statusText: error.message});
+			}
 		}
 
 		// Any non-GET api calls, we should queue up and send when there's network
