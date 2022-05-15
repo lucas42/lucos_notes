@@ -112,6 +112,7 @@ export default class State {
 		} else {
 			this.#data.items[uuid].deleted = true;
 		}
+		await this.syncFunction();
 	}
 
 	async deleteList(slug, hardDelete) {
@@ -128,6 +129,7 @@ export default class State {
 		} else {
 			this.#data.lists[slug].deleted = true;
 		}
+		await this.syncFunction();
 	}
 }
 
