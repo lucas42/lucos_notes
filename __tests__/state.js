@@ -48,7 +48,7 @@ describe('Handle raw state data', () => {
 	});
 });
 
-describe('Get and set state data', () => {
+describe('Get, set and delete state data', () => {
 	function getPrepopulatedState() {
 		const state = new State(() => {});
 		state.setRawData({lists:{
@@ -177,6 +177,43 @@ describe('Get and set state data', () => {
 		state.setItem('123', {name: "Second Item", list: "groceries", url: "https://example.com/new2nditem"});
 		const groceryOutput = await state.getList('groceries');
 		expect(groceryOutput.items[1].url).toEqual("https://example.com/new2nditem");
+	});
+	test('Hard delete item from list', async () => {
+		const state = getPrepopulatedState();
+
+		await state.deleteItem('abc', true);
+		const groceryOutput = await state.getList('groceries');
+		expect(groceryOutput.items).not.toContainEqual({name: "First Item", uuid: "abc"});
+		expect(groceryOutput.items).toHaveLength(1);
+		expect(groceryOutput.items[0].deleted).toBeFalsy();
+	});
+	test('Hard delete non-existant item', async () => {
+		const state = getPrepopulatedState();
+
+		await state.deleteItem('def', true);
+		const groceryOutput = await state.getList('groceries');
+		expect(groceryOutput.items).toContainEqual({name: "First Item", uuid: "abc"});
+		expect(groceryOutput.items).toContainEqual({name: "Second Item", uuid: "123", url: "http://example.com/2nditem"});
+		expect(groceryOutput.items).toHaveLength(2);
+	});
+	test('Soft delete item from list', async () => {
+		const state = getPrepopulatedState();
+
+		await state.deleteItem('abc', false);
+		const groceryOutput = await state.getList('groceries');
+		expect(groceryOutput.items[0].deleted).toBe(true);
+		expect(groceryOutput.items).toContainEqual({name: "Second Item", uuid: "123", url: "http://example.com/2nditem"});
+		expect(groceryOutput.items[1].deleted).toBeFalsy();
+		expect(groceryOutput.items).toHaveLength(2);
+	});
+	test('Soft delete non-existant item', async () => {
+		const state = getPrepopulatedState();
+
+		await state.deleteItem('def', false);
+		const groceryOutput = await state.getList('groceries');
+		expect(groceryOutput.items).toContainEqual({name: "First Item", uuid: "abc"});
+		expect(groceryOutput.items).toContainEqual({name: "Second Item", uuid: "123", url: "http://example.com/2nditem"});
+		expect(groceryOutput.items).toHaveLength(2);
 	});
 });
 

@@ -57,7 +57,7 @@ export default class State {
 			name: this.#data.lists[slug].name || slug,
 			items: this.#data.lists[slug].items.map(uuid => {
 				const item = this.#data.items[uuid];
-				return {uuid, name: item.name, url: item.url, unsynced: item.unsynced};
+				return {uuid, name: item.name, url: item.url, unsynced: item.unsynced, deleted: item.deleted};
 			}),
 			unsynced: this.#data.lists[slug].unsynced,
 			hasUnsyncedData: this.#hasUnsyncedData(),
@@ -73,6 +73,11 @@ export default class State {
 		data.unsynced = true;
 		this.#data.lists[slug] = data;
 	}
+	#removeItemFromList(itemuuid, listslug) {
+		if (listslug in this.#data.lists) {
+			this.#data.lists[listslug].items = this.#data.lists[listslug].items.filter(uuid => (uuid !== itemuuid));
+		}
+	}
 	async setItem(uuid, data) {
 		if (!('list' in data) || !data.list) throw new ValidationError("Item is missing a list");
 		if (typeof data.list !== 'string') throw new ValidationError("Item's list slug is not a string");
@@ -83,14 +88,28 @@ export default class State {
 			await this.#setListData(data.list);
 		}
 		if (data.list !== previousList) {
-			if (previousList in this.#data.lists) {
-				this.#data.lists[previousList].items = this.#data.lists[previousList].items.filter(itemuuid => (itemuuid !== uuid));
-			}
+			this.#removeItemFromList(uuid, previousList);
 		}
 		if (!this.#data.lists[data.list].items.includes(uuid)) {
 			this.#data.lists[data.list].items.push(uuid);
 		}
 		await this.syncFunction();
+	}
+
+	async deleteItem(uuid, hardDelete) {
+		await this.waitUntilDataLoaded;
+		const existingData = this.#data.items[uuid];
+		if (!existingData) return;
+
+		// Hard deletes remove the item from its list and also the item's data
+		if (hardDelete) {
+			this.#removeItemFromList(uuid, existingData.list);
+			delete this.#data.items[uuid];
+
+		// Soft deletes just mark the item as deleted, but preserve its existance until a hard delete
+		} else {
+			this.#data.items[uuid].deleted = true;
+		}
 	}
 }
 
