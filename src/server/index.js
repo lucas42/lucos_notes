@@ -32,6 +32,14 @@ app.put('/api/item/:uuid', catchErrors(async (req, res) => {
 	await state.setItem(req.params.uuid, req.body);
 	res.status(204).send();
 }));
+app.delete('/api/list/:slug', catchErrors(async (req, res) => {
+	await state.deleteList(req.params.slug, true);
+	res.status(204).send();
+}));
+app.delete('/api/item/:uuid', catchErrors(async (req, res) => {
+	await state.deleteItem(req.params.uuid, true);
+	res.status(204).send();
+}));
 
 app.use('/templates', express.static('./templates', {extensions: ['mustache']}));
 

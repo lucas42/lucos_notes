@@ -20,6 +20,8 @@ export async function modifyStateWithRequest(state, request) {
 			const slug = urlparts.shift();
 			if (request.method === 'PUT') {
 				return state.setList(slug, await request.json());
+			} else if (request.method === 'DELETE') {
+				return state.deleteList(slug, false);
 			} else {
 				throw new Error(`Unsupported method for lists ${request.method}`);
 			}
@@ -28,6 +30,8 @@ export async function modifyStateWithRequest(state, request) {
 			const uuid = urlparts.shift();
 			if (request.method === 'PUT') {
 				return state.setItem(uuid, await request.json());
+			} else if (request.method === 'DELETE') {
+				return state.deleteItem(uuid, false);
 			} else {
 				throw new Error(`Unsupported method for items ${request.method}`);
 			}

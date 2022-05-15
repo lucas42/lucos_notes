@@ -17,8 +17,9 @@
 		</nav>
 		<ul id="todo">
 			{{#items}}
-			<li class="item">
+			<li class="item{{#deleted}} deleted{{/deleted}}">
 				<edit-item uuid="{{uuid}}" name="{{name}}" url="{{url}}" list="{{slug}}"></edit-item>
+				<delete-item uuid="{{uuid}}"></delete-item>
 				{{#url}}<a href="{{url}}" target="__blank">{{name}}</a>{{/url}}
 				{{^url}}<span>{{name}}</span>{{/url}}
 				{{#unsynced}}<span class="pending" title="Sync pending">⌁</span>{{/unsynced}}
@@ -27,6 +28,7 @@
 		</ul>
 		<div id="controls">
 			<new-item-button list="{{slug}}"></new-item-button>
+			<delete-list-button slug="{{slug}}" empty="{{^items}}true{{/items}}"></delete-list-button>
 			{{#hasUnsyncedData}}<sync-button></sync-button>{{/hasUnsyncedData}}
 		</div>
 		<script type="text/javascript" src="/client.js"></script>

@@ -14,7 +14,7 @@
 		<lucos-navbar font="'Reenie Beanie', Textile, cursive">Todo List</lucos-navbar>
 		<ul id="todo" class="lists">
 			{{#lists}}
-				<li class="list">
+				<li class="list{{#deleted}} deleted{{/deleted}}">
 					<edit-list slug="{{slug}}" name="{{name}}"></edit-list>
 					<a href="/todo/{{slug}}">{{name}}</a>
 					{{#unsynced}}<span class="pending" title="Sync pending">⌁</span>{{/unsynced}}
