@@ -215,6 +215,47 @@ describe('Get, set and delete state data', () => {
 		expect(groceryOutput.items).toContainEqual({name: "Second Item", uuid: "123", url: "http://example.com/2nditem"});
 		expect(groceryOutput.items).toHaveLength(2);
 	});
+	test('Hard delete entire list', async () => {
+		const state = getPrepopulatedState();
+
+		await state.deleteList('groceries', true);
+
+		expect(state.getList('groceries')).rejects.toThrow(NotFoundError);
+
+		const indexOutput = await state.getLists();
+		expect(indexOutput.lists).toHaveLength(1);
+	});
+	test('Hard delete non-existant list', async () => {
+		const state = getPrepopulatedState();
+
+		await state.deleteList('jellies', true);
+
+		expect(state.getList('jellies')).rejects.toThrow(NotFoundError);
+
+		const indexOutput = await state.getLists();
+		expect(indexOutput.lists).toHaveLength(2);
+	});
+	test('Soft delete entire list', async () => {
+		const state = getPrepopulatedState();
+
+		await state.deleteList('groceries', false);
+		const groceryOutput = await state.getList('groceries');
+		expect(groceryOutput.deleted).toBe(true);
+
+		const indexOutput = await state.getLists();
+		expect(indexOutput.lists).toHaveLength(2);
+		expect(indexOutput.lists[0].deleted).toBe(true);
+	});
+	test('Soft delete non-existant list', async () => {
+		const state = getPrepopulatedState();
+
+		await state.deleteList('jellies', false);
+
+		expect(state.getList('jellies')).rejects.toThrow(NotFoundError);
+
+		const indexOutput = await state.getLists();
+		expect(indexOutput.lists).toHaveLength(2);
+	});
 });
 
 describe('Sync function', () => {

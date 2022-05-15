@@ -42,6 +42,7 @@ export default class State {
 				slug,
 				name: this.#data.lists[slug].name || slug,
 				unsynced: this.#data.lists[slug].unsynced,
+				deleted: this.#data.lists[slug].deleted,
 			});
 		}
 		return {
@@ -61,6 +62,7 @@ export default class State {
 			}),
 			unsynced: this.#data.lists[slug].unsynced,
 			hasUnsyncedData: this.#hasUnsyncedData(),
+			deleted: this.#data.lists[slug].deleted,
 		}
 	}
 	async setList(slug, data) {
@@ -109,6 +111,22 @@ export default class State {
 		// Soft deletes just mark the item as deleted, but preserve its existance until a hard delete
 		} else {
 			this.#data.items[uuid].deleted = true;
+		}
+	}
+
+	async deleteList(slug, hardDelete) {
+		await this.waitUntilDataLoaded;
+		const existingData = this.#data.lists[slug];
+		if (!existingData) return;
+		if (hardDelete) {
+			delete this.#data.lists[slug];
+
+			// Tidy up any items from this list too
+			existingData.items.forEach(uuid => {
+				delete this.#data.items[uuid];
+			});
+		} else {
+			this.#data.lists[slug].deleted = true;
 		}
 	}
 }
