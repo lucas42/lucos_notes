@@ -28,10 +28,12 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "folder-hash": "^4.0.2",
     "idb": "^7.0.0",
     "jest": "^27.5.1",
     "lucos_navbar": "^1.0.0",
     "restful-queue": "^0.0.1",
+    "terser-webpack-plugin": "^5.3.1",
     "webpack-cli": "^4.9.2"
   },
   "jest": {
