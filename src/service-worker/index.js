@@ -17,7 +17,6 @@ self.addEventListener('install', event => {
 	]));
 });
 
-
 async function handleRequest(request) {
 	try {
 		const url = new URL(request.url);
