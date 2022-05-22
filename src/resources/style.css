@@ -1,0 +1,92 @@
+body {
+	background: #666;
+	color: white;
+	font-size: 20px;
+	left: 0;
+	right: 0;
+	position: absolute;
+	padding: 5%;
+	margin: 0;
+	font-family: 'Reenie Beanie', Textile, cursive;
+}
+nav {
+	margin-left: 3em;
+}
+nav a {
+	text-decoration: none;
+	color: inherit;
+}
+nav a:hover {
+	text-decoration: underline;
+}
+#controls {
+	text-align: center;
+	clear: right;
+	padding-top: 0.2em;
+	height: 1.8em;
+	display: block;
+	overflow: hidden;
+}
+#todo {
+	margin: 0;
+	padding: 1.5em 2em 2em;
+	background: #edb;
+	color: #333;
+	border-radius: 2px;
+	-webkit-box-shadow: 5px 5px 10px 0px #000;
+	margin-bottom: 10px;
+}
+#todo a {
+	text-decoration: none;
+	font-style: italic;
+	color: inherit;
+}
+#todo a:hover {
+	text-decoration: underline;
+}
+#todo>li>*.deleted {
+	text-decoration: line-through;
+	opacity: 0.5;
+}
+#todo>li {
+	padding: 0.3em;
+	border-bottom: solid thin #AAF;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+#todo>.list>a,
+#todo>.list input {
+	text-decoration: none;
+	color: inherit;
+	font-weight: bold;
+}
+#todo>li.spare {
+	list-style: none;
+	border-bottom: none;
+	height: 1em;
+}
+.inlineform {
+	display: inline;
+}
+.inlineform input {
+	border: none;
+	background: inherit;
+	color: inherit;
+	font: inherit;
+	margin: 0;
+	width: 100%;
+}
+.pending {
+	color: #954;
+	cursor: default;
+}
+.deleted {
+	text-decoration: line-through;
+	color: #555;
+}
+@font-face {
+	font-family: 'Reenie Beanie';
+	font-style: normal;
+	font-weight: normal;
+	src: url('/ReenieBeanie.ttf');
+}

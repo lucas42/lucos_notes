@@ -7,6 +7,7 @@ An offline todo list
 
 ## Build-time Dependencies
 * nodejs
+* npm
 * [lucos core](https://github.com/lucas42/lucos_core)
 
 ## Running
