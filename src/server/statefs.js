@@ -5,11 +5,12 @@ import State from '../classes/state.js';
 // STATE_DIR should be the path of a directory which persists between restarts
 if (!('STATE_DIR' in process.env)) throw new Error('Environment varible STATE_DIR not set');
 const STATE_FILE = `${process.env.STATE_DIR}/data_v2.json`;
-const state = new State();
+const state = new State(writeToFS);
 
 async function init() {
 	const rawData = await readFromFS();
 	state.setRawData(rawData);
+	writeToFS(); // Temporary write so that the migrated state gets written back to disk
 }
 
 init();
@@ -25,7 +26,6 @@ async function readFromFS() {
 
 async function writeToFS() {
 	try {
-		await unlink(STATE_FILE);
 		await writeFile(STATE_FILE, JSON.stringify(await state.getRawData()));
 	} catch (error) {
 		console.error("Error saving state:", error);
