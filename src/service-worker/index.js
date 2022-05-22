@@ -30,6 +30,7 @@ async function handleRequest(request) {
 		if (component === 'sync' && request.method === 'POST') {
 			try {
 				await syncRequests();
+				await fetchData(state);
 				return new Response(null, {status: 204, statusText: "Successful Sync"});
 			} catch (error) {
 				return new Response(null, {status: 500, statusText: error.message});

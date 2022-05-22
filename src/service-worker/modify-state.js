@@ -3,7 +3,7 @@ import { getOutstandingRequests } from 'restful-queue';
 export async function modifyStateWithOutstandingRequests(state) {
 	const outstandingRequests = await getOutstandingRequests();
 	for (const request of outstandingRequests) {
-		await modifyStateWithRequest(state, request)
+		await modifyStateWithRequest(state, request);
 	}
 }
 

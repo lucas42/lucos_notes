@@ -1,7 +1,7 @@
 export default class ControlButton extends HTMLElement {
 	constructor(label) {
 		super();
-		const shadow = this.attachShadow({mode: 'closed'});
+		const shadow = this.attachShadow({mode: 'open'});
 
 		const style = document.createElement('style');
 		style.textContent = `
