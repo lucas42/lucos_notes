@@ -11,12 +11,13 @@ export default class ControlButton extends HTMLElement {
 				color: #fff;
 				border-radius: 1em;
 				padding: 0 1em;
-				margin: 0 1em;
+				margin: 2px 5px;
 				font-family: 'Reenie Beanie', Textile, cursive;
 				font-size: 25px;
 				font-weight: bold;
 				border: none;
 				cursor: pointer;
+				white-space: nowrap;
 			}
 			:host(:active) {
 				background-image: -webkit-gradient(linear, 0 0, 0 100%, color-stop(0, transparent), color-stop(0.15, transparent), color-stop(0.9, rgba(255, 255, 255, 0.4)));

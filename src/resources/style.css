@@ -5,12 +5,12 @@ body {
 	left: 0;
 	right: 0;
 	position: absolute;
-	padding: 5%;
+	padding: 35px 5% 5% 5%;
 	margin: 0;
 	font-family: 'Reenie Beanie', Textile, cursive;
 }
 nav {
-	margin-left: 3em;
+	margin-left: 1em;
 }
 nav a {
 	text-decoration: none;
@@ -25,7 +25,6 @@ nav a:hover {
 	padding-top: 0.2em;
 	height: 1.8em;
 	display: block;
-	overflow: hidden;
 }
 #todo {
 	margin: 0;
@@ -37,9 +36,10 @@ nav a:hover {
 	margin-bottom: 10px;
 }
 #todo a {
-	text-decoration: none;
 	font-style: italic;
 	color: inherit;
+    text-decoration-thickness: from-font;
+    text-decoration-color: #cce;
 }
 #todo a:hover {
 	text-decoration: underline;
@@ -58,7 +58,6 @@ nav a:hover {
 #todo>.list input {
 	text-decoration: none;
 	color: inherit;
-	font-weight: bold;
 }
 #todo>li.spare {
 	list-style: none;

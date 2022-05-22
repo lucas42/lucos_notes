@@ -5,12 +5,22 @@ import ControlButton from './control-button.js';
 class SyncButton extends ControlButton {
 	constructor() {
 
-		// If there's no service worker, then this button is pointless, so bail early
-		if (!navigator.serviceWorker.controller) return;
 		super("Sync Data");
 		const component = this;
 
 		const style = document.createElement('style');
+		component.shadowRoot.append(style);
+
+		// If there's no service worker, then this button is pointless, so hide it and bail early
+		if (!navigator.serviceWorker.controller) {
+			style.textContent = `
+				:host {
+					display: none;
+				}
+			`;
+			return;
+		}
+
 		style.textContent = `
 			@keyframes spin {
 				from { transform:rotate(0deg); }
@@ -20,6 +30,7 @@ class SyncButton extends ControlButton {
 				display: inline-block;
 				margin-left: 0.5em;   /* Don't get too close to button text */
 				padding-bottom: 4px;  /* Needed to centre the rotation in the middle of the spinner */
+				margin-bottom: -4px;
 				font-weight: normal;
 				animation: spin 1.25s linear infinite;
 				animation-play-state: paused; /* Pause the play state so that when load is complete, there's no jerk back to original position */
@@ -29,7 +40,6 @@ class SyncButton extends ControlButton {
 			}
 		`;
 
-		component.shadowRoot.append(style);
 		const spinner = document.createElement("span");
 		spinner.append(document.createTextNode("↻"));
 		spinner.classList.add("spinner");
