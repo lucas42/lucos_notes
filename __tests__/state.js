@@ -92,14 +92,14 @@ describe('Get, set and delete state data', () => {
 	test('Update list with a new name', async () => {
 		const state = getPrepopulatedState();
 
-		state.setList("groceries", {name:"Food Shopping"});
+		await state.setList("groceries", {name:"Food Shopping"});
 		const output = await state.getList('groceries');
 		expect(output.name).toEqual("Food Shopping");
 	});
 	test('Update list with empty name', async () => {
 		const state = getPrepopulatedState();
 
-		state.setList("groceries",  {});
+		await state.setList("groceries",  {});
 		const output = await state.getList('groceries');
 		expect(output.name).toEqual('groceries');
 
@@ -109,21 +109,21 @@ describe('Get, set and delete state data', () => {
 	test('Update non-existant list', async () => {
 		const state = getPrepopulatedState();
 
-		state.setList("newlist", {name:"Brand New List"});
+		await state.setList("newlist", {name:"Brand New List"});
 		const output = await state.getList('newlist');
 		expect(output.name).toEqual('Brand New List');
 	});
 	test('Update item with a new name', async () => {
 		const state = getPrepopulatedState();
 
-		state.setItem("abc", {name:"The First Item", irrelevantField: "hi 👋", list:"groceries"});
+		await state.setItem("abc", {name:"The First Item", irrelevantField: "hi 👋", list:"groceries"});
 		const output = await state.getList('groceries');
 		expect(output.items[0]).toEqual({name: "The First Item", uuid: "abc"});
 	});
 	test('Move item to different list', async () => {
 		const state = getPrepopulatedState();
 
-		state.setItem("abc", {name:"First Item", irrelevantField: "hi 👋", list:"moarthings"});
+		await state.setItem("abc", {name:"First Item", irrelevantField: "hi 👋", list:"moarthings"});
 		const groceryOutput = await state.getList('groceries');
 		const moarOutput = await state.getList('moarthings');
 		expect(groceryOutput.items).not.toContainEqual({name: "First Item", uuid: "abc"});
@@ -132,7 +132,7 @@ describe('Get, set and delete state data', () => {
 	test('Create new Item', async () => {
 		const state = getPrepopulatedState();
 
-		state.setItem("xyz", {name:"Third Item", otherField: true, list:"groceries"});
+		await state.setItem("xyz", {name:"Third Item", otherField: true, list:"groceries"});
 		const output = await state.getList('groceries');
 		expect(output.items[2]).toEqual({name: "Third Item", uuid:"xyz"});
 	});
@@ -149,7 +149,7 @@ describe('Get, set and delete state data', () => {
 	test('Move item to non-existant list', async () => {
 		const state = getPrepopulatedState();
 
-		state.setItem("abc", {name:"First Item", irrelevantField: "hi 👋", list:"extralist"});
+		await state.setItem("abc", {name:"First Item", irrelevantField: "hi 👋", list:"extralist"});
 		const groceryOutput = await state.getList('groceries');
 		const extraOutput = await state.getList('extralist');
 		expect(groceryOutput.items).not.toContainEqual({name: "First Item", uuid: "abc"});
@@ -160,21 +160,21 @@ describe('Get, set and delete state data', () => {
 	test('Add url to item', async () => {
 		const state = getPrepopulatedState();
 
-		state.setItem('abc', {name: "First Item", list: "groceries", url: "https://example.com/1st"});
+		await state.setItem('abc', {name: "First Item", list: "groceries", url: "https://example.com/1st"});
 		const groceryOutput = await state.getList('groceries');
 		expect(groceryOutput.items[0].url).toEqual("https://example.com/1st");
 	});
 	test('Remove url from item', async () => {
 		const state = getPrepopulatedState();
 
-		state.setItem('123', {name: "Second Item", list: "groceries"});
+		await state.setItem('123', {name: "Second Item", list: "groceries"});
 		const groceryOutput = await state.getList('groceries');
 		expect(groceryOutput.items[1].url).toBeFalsy();
 	});
 	test('Modify url of item', async () => {
 		const state = getPrepopulatedState();
 
-		state.setItem('123', {name: "Second Item", list: "groceries", url: "https://example.com/new2nditem"});
+		await state.setItem('123', {name: "Second Item", list: "groceries", url: "https://example.com/new2nditem"});
 		const groceryOutput = await state.getList('groceries');
 		expect(groceryOutput.items[1].url).toEqual("https://example.com/new2nditem");
 	});
