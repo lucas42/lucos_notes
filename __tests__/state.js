@@ -8,13 +8,6 @@ describe('Handle raw state data', () => {
 		const output = await state.getRawData();
 		expect(output).toEqual({lists:{groceries:{name: "Grocery Shopping"}}, items:{}});
 	});
-	test('Getters wait for rawData', async () => {
-		const state = new State();
-		const outputPromise = state.getRawData();
-		state.setRawData({lists:{groceries:{name: "Grocery Shopping"}}, items:{}});
-		const output = await outputPromise;
-		expect(output).toEqual({lists:{groceries:{name: "Grocery Shopping"}}, items:{}});
-	});
 	test('Raw data with no lists array fails', () => {
 		const state = new State();
 
@@ -256,6 +249,77 @@ describe('Get, set and delete state data', () => {
 		const indexOutput = await state.getLists();
 		expect(indexOutput.lists).toHaveLength(2);
 	});
+});
+
+describe('Functions wait for raw data to be set', () => {
+
+	// It doesn't really matter what the raw data is in this set of tests, we're mostly checking that functions wait for it to be set.
+	const rawData = () => {
+		return {
+			lists:{
+				'groceries': {name: "Grocery Shopping", extraneousField: true, items:["abc","123"]},
+				'moarthings': {name: "Even More Stuff", ignoreme:"yes please", metoo: ["of course"], items:[]},
+			}, items:{
+				"123": {"name":"Second Item", extraExtraneousField: true, "list":"groceries", "url": "http://example.com/2nditem"},
+				"abc": {"name":"First Item", ignoreThese:["this", "and this"], "list":"groceries"},
+				"unused": {"name":"Unused Item"},
+			}
+		}
+	};
+	test('getRawData waits for rawData', async () => {
+		const state = new State();
+		const outputPromise = state.getRawData();
+		state.setRawData(rawData());
+		const output = await outputPromise;
+		expect(output).toEqual(rawData());
+	});
+	test('getLists waits for rawData', async () => {
+		const state = new State();
+		const outputPromise = state.getLists();
+		state.setRawData(rawData());
+		const output = await outputPromise;
+		expect(output.lists).toHaveLength(2);
+	});
+	test('getList waits for rawData', async () => {
+		const state = new State();
+		const outputPromise = state.getList('groceries');
+		state.setRawData(rawData());
+		const output = await outputPromise;
+		expect(output.name).toEqual("Grocery Shopping");
+	});
+	test('setList waits for rawData', async () => {
+		const state = new State();
+		const setPromise = state.setList("groceries", {name:"Food Shopping"});
+		state.setRawData(rawData());
+		await setPromise;
+		const output = await state.getList('groceries');
+		expect(output.name).toEqual("Food Shopping");
+	});
+	test('deleteList waits for rawData', async () => {
+		const state = new State();
+		const setPromise = state.deleteList("groceries", true);
+		state.setRawData(rawData());
+		await setPromise;
+		const output = await state.getLists();
+		expect(output.lists).toHaveLength(1);
+	});
+	test('setItem waits for rawData', async () => {
+		const state = new State();
+		const setPromise = state.setItem("abc", {name:"The First Item", list:"groceries"});
+		state.setRawData(rawData());
+		await setPromise;
+		const output = await state.getList('groceries');
+		expect(output.items[0].name).toEqual("The First Item");
+	});
+	test('deleteItem waits for rawData', async () => {
+		const state = new State();
+		const setPromise = state.deleteItem("abc", true);
+		state.setRawData(rawData());
+		await setPromise;
+		const output = await state.getList('groceries');
+		expect(output.items).toHaveLength(1);
+	});
+
 });
 
 describe('Sync function', () => {

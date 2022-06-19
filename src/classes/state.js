@@ -81,6 +81,7 @@ export default class State {
 		}
 	}
 	async setItem(uuid, data) {
+		await this.waitUntilDataLoaded;
 		if (!('list' in data) || !data.list) throw new ValidationError("Item is missing a list");
 		if (typeof data.list !== 'string') throw new ValidationError("Item's list slug is not a string");
 		const previousList = this.#data.items[uuid]?.list;
