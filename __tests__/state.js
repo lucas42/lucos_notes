@@ -45,7 +45,7 @@ describe('Get, set and delete state data', () => {
 	function getPrepopulatedState() {
 		const state = new State(() => {});
 		state.setRawData({lists:{
-			'groceries': {name: "Grocery Shopping", extraneousField: true, items:["abc","123"]},
+			'groceries': {name: "Grocery Shopping", extraneousField: true, items:["abc","123"], icon:'🛒'},
 			'moarthings': {name: "Even More Stuff", ignoreme:"yes please", metoo: ["of course"], items:[]},
 		}, items:{
 			"123": {"name":"Second Item", extraExtraneousField: true, "list":"groceries", "url": "http://example.com/2nditem"},
@@ -60,8 +60,8 @@ describe('Get, set and delete state data', () => {
 		const output = await state.getLists();
 		expect(output).toEqual({
 			lists:[
-				{slug:'groceries',name: "Grocery Shopping"},
-				{slug:'moarthings',name: "Even More Stuff"},
+				{slug:'groceries', name: "Grocery Shopping", icon: "🛒"},
+				{slug:'moarthings', name: "Even More Stuff", icon: "📋"},
 			],
 			hasUnsyncedData: false,
 		});
@@ -80,6 +80,7 @@ describe('Get, set and delete state data', () => {
 				{"name":"Second Item", "url": "http://example.com/2nditem", "uuid": "123"},
 			],
 			hasUnsyncedData: false,
+			icon: "🛒",
 		});
 	});
 	test('Update list with a new name', async () => {
@@ -248,6 +249,20 @@ describe('Get, set and delete state data', () => {
 
 		const indexOutput = await state.getLists();
 		expect(indexOutput.lists).toHaveLength(2);
+	});
+	test('Lists get default icon', async () => {
+		const state = getPrepopulatedState();
+
+		await state.setList("race-results",  {});
+		const output = await state.getList('race-results');
+		expect(output.icon).toEqual('📋');
+	});
+	test('List icon limited to one character', async () => {
+		const state = getPrepopulatedState();
+
+		await state.setList("housework",  {icon: "🧹🧽🧼✨🛁"});
+		const output = await state.getList('housework');
+		expect(output.icon).toEqual('🧹');
 	});
 });
 

@@ -43,6 +43,7 @@ export default class State {
 				name: this.#data.lists[slug].name || slug,
 				unsynced: this.#data.lists[slug].unsynced,
 				deleted: this.#data.lists[slug].deleted,
+				icon: this.#data.lists[slug].icon || '📋',
 			});
 		}
 		return {
@@ -63,6 +64,7 @@ export default class State {
 			unsynced: this.#data.lists[slug].unsynced,
 			hasUnsyncedData: this.#hasUnsyncedData(),
 			deleted: this.#data.lists[slug].deleted,
+			icon: this.#data.lists[slug].icon || '📋',
 		}
 	}
 	async setList(slug, data) {
@@ -73,6 +75,9 @@ export default class State {
 	#setListData(slug, data={}) {
 		data.items = this.#data.lists[slug]?.items || [];
 		data.unsynced = true;
+
+		// Using the raw string here would count emjoi as multiple characters, but the iterable protocol splits the string to codepoints, so each emoji is one
+		if (data.icon && [...data.icon].length > 1) data.icon = [...data.icon][0];
 		this.#data.lists[slug] = data;
 	}
 	#removeItemFromList(itemuuid, listslug) {
