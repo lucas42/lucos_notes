@@ -1,16 +1,19 @@
 import EditElement from './edit-element.js';
 import ControlButton from './control-button.js';
 
-async function editList(slug, oldName) {
+async function editList(slug, oldName, oldIcon) {
 	const name = window.prompt("List Name", oldName || slug);
 	if (name === null) return;
+	const icon = window.prompt("Icon", oldIcon || "📋");
+	if (icon === null) return;
+
 	// TODO: show loading spinner/hold screen
 	const resp = await fetch('/api/list/'+encodeURIComponent(slug), {
 		method: 'PUT',
 		headers: {
 			'Content-Type': "application/json",
 		},
-		body: JSON.stringify({ name }),
+		body: JSON.stringify({ name, icon }),
 	});
 	if (resp.ok) {
 		location.reload();
