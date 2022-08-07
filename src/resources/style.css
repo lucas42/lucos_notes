@@ -89,3 +89,9 @@ nav a:hover {
 	font-weight: normal;
 	src: url('/ReenieBeanie.ttf');
 }
+.icon {
+	font-style: normal;
+	font-size: 1em;
+	line-height: 1em;
+	width: 1em;
+}

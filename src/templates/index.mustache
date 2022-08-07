@@ -15,6 +15,7 @@
 		<ul id="todo" class="lists">
 			{{#lists}}
 				<li class="list{{#deleted}} deleted{{/deleted}}">
+					<span class="icon">{{icon}}</span>
 					<edit-list slug="{{slug}}" name="{{name}}"></edit-list>
 					<a href="/todo/{{slug}}">{{name}}</a>
 					{{#unsynced}}<span class="pending" title="Sync pending">⌁</span>{{/unsynced}}
