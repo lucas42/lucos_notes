@@ -28,7 +28,7 @@ class EditListElement extends EditElement {
 		const component = this;
 
 		component.addEventListener('click', async () => {
-			await editList(component.getAttribute('slug'), component.getAttribute('name'));
+			await editList(component.getAttribute('slug'), component.getAttribute('name'), component.getAttribute('icon'));
 		});
 	}
 }
