@@ -20,6 +20,11 @@ self.addEventListener('install', event => {
 async function handleRequest(request) {
 	try {
 		const url = new URL(request.url);
+
+		if (url.hostname === "am.l42.eu") {
+			return await fetch(request);
+		}
+
 		const urlparts = url.pathname.split('/');
 		urlparts.shift(); //pathname always starts with a slash, so ignore first part.
 		const component = urlparts.shift();
