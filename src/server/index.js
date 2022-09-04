@@ -56,6 +56,8 @@ app.get('/_info', catchErrors(async (req, res) => {
 		start_url: '/todo/',
 		icon: '/icon.png',
 		network_only: false,
+		title: "Todo List",
+		show_on_homepage: true,
 	});
 }));
 
