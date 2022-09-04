@@ -52,7 +52,10 @@ app.get('/_info', catchErrors(async (req, res) => {
 		metrics: {},
 		ci: {
 			circle: "gh/lucas42/lucos_notes",
-		}
+		},
+		start_url: '/todo/',
+		icon: '/icon.png',
+		network_only: false,
 	});
 }));
 
