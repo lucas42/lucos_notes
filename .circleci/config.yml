@@ -5,7 +5,7 @@ orbs:
 jobs:
   test:
     docker:
-      - image: node:16-alpine
+      - image: node:21-alpine
     steps:
       - checkout
       - run:
