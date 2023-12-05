@@ -34,7 +34,7 @@
     "lucos_navbar": "^1.0.0",
     "restful-queue": "^0.0.1",
     "terser-webpack-plugin": "^5.3.1",
-    "webpack-cli": "^4.9.2"
+    "webpack-cli": "^5.1.4"
   },
   "jest": {
     "testEnvironment": "node",
