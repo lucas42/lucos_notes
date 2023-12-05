@@ -30,7 +30,7 @@
   "devDependencies": {
     "folder-hash": "^4.0.2",
     "idb": "^8.0.0",
-    "jest": "^27.5.1",
+    "jest": "^29.7.0",
     "lucos_navbar": "^1.2.0",
     "restful-queue": "^0.0.1",
     "terser-webpack-plugin": "^5.3.1",
