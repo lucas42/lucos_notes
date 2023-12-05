@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "folder-hash": "^4.0.2",
-    "idb": "^7.0.0",
+    "idb": "^8.0.0",
     "jest": "^27.5.1",
     "lucos_navbar": "^1.0.0",
     "restful-queue": "^0.0.1",
