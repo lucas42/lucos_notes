@@ -1,16 +1,41 @@
 import express from 'express';
 import mustacheExpress from 'mustache-express';
-const app = express();
-const port = process.env.PORT || 8004;
+import { middleware as authMiddleware } from './auth.js';
 import state, {getInfoCheck} from './statefs.js';
 import { ValidationError, NotFoundError } from '../classes/state.js';
 
-app.use(express.json());
-app.use(express.static('./resources', {extensions: ['json']}));
+const app = express();
+app.auth = authMiddleware;
+const port = process.env.PORT || 8004;
 
 app.engine('mustache', mustacheExpress());
 app.set('view engine', 'mustache');
 app.set('views', `./templates`);
+
+// Avoid authentication for _info, so call before invoking auth middleware
+app.get('/_info', catchErrors(async (req, res) => {
+	res.json({
+		system: 'lucos_notes',
+		checks: {
+			"data-file": await getInfoCheck(),
+		},
+		metrics: {},
+		ci: {
+			circle: "gh/lucas42/lucos_notes",
+		},
+		start_url: '/todo/',
+		icon: '/icon.png',
+		network_only: false,
+		title: "Todo List",
+		show_on_homepage: true,
+	});
+}));
+
+
+app.use((req, res, next) => app.auth(req, res, next));
+app.use(express.json());
+app.use(express.static('./resources', {extensions: ['json']}));
+
 
 app.get('/', (req, res) => {
 	res.redirect("/todo/");
@@ -43,23 +68,6 @@ app.delete('/api/item/:uuid', catchErrors(async (req, res) => {
 
 app.use('/templates', express.static('./templates', {extensions: ['mustache']}));
 
-app.get('/_info', catchErrors(async (req, res) => {
-	res.json({
-		system: 'lucos_notes',
-		checks: {
-			"data-file": await getInfoCheck(),
-		},
-		metrics: {},
-		ci: {
-			circle: "gh/lucas42/lucos_notes",
-		},
-		start_url: '/todo/',
-		icon: '/icon.png',
-		network_only: false,
-		title: "Todo List",
-		show_on_homepage: true,
-	});
-}));
 
 // Wrapper for controllor async functions which catches errors and sends them on to express' error handling
 function catchErrors(controllerFunc) {
