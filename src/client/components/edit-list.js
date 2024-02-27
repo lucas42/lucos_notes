@@ -7,7 +7,6 @@ async function editList(slug, oldName, oldIcon) {
 	const icon = window.prompt("Icon", oldIcon || "📋");
 	if (icon === null) return;
 
-	// TODO: show loading spinner/hold screen
 	const resp = await fetch('/api/list/'+encodeURIComponent(slug), {
 		method: 'PUT',
 		headers: {
@@ -26,26 +25,26 @@ class EditListElement extends EditElement {
 	constructor() {
 		super();
 		const component = this;
-
 		component.addEventListener('click', async () => {
+			component.dataset.loading = true;
 			await editList(component.getAttribute('slug'), component.getAttribute('name'), component.getAttribute('icon'));
 		});
 	}
 }
-
 customElements.define('edit-list', EditListElement);
 
 
 class NewListButton extends ControlButton {
 	constructor() {
 		super("New List");
+		const component = this;
 
 		this.addEventListener("click", async () => {
 			const slug = window.prompt("List Slug");
 			if (!slug) return console.warn("no slug given, giving up");
+			component.dataset.loading = true;
 			await editList(slug);
 		});
 	}
 }
-
 customElements.define('new-list-button', NewListButton);

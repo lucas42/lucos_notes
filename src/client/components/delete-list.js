@@ -24,6 +24,7 @@ class DeleteListButton extends ControlButton {
 
 		component.addEventListener("click", async () => {
 			if (!component.getAttribute('empty') && !window.confirm("This list still contains items.  Are you sure you want to delete it?")) return;
+			shadow.dataset.loading = true;
 			await deleteList(component.getAttribute('slug'));
 		});
 	}

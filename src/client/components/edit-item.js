@@ -7,7 +7,6 @@ async function editItem(uuid, list, oldName, oldUrl) {
 	if (name === null) return;
 	const url = window.prompt("URL", oldUrl);
 	if (url === null) return;
-	// TODO: show loading spinner/hold screen
 	const resp = await fetch('/api/item/'+encodeURIComponent(uuid), {
 		method: 'PUT',
 		headers: {
@@ -27,6 +26,7 @@ class EditItemElement extends EditElement {
 		super();
 		const component = this;
 		component.addEventListener('click', async () => {
+			component.dataset.loading = true;
 			await editItem(component.getAttribute('uuid'), component.getAttribute('list'), component.getAttribute('name'), component.getAttribute('url'));
 		});
 	}
@@ -39,6 +39,7 @@ class NewItemButton extends ControlButton {
 		super("Add Item");
 		const component = this;
 		this.addEventListener("click", async () => {
+			component.dataset.loading = true;
 			await editItem(uuidv4(), component.getAttribute('list'));
 		});
 	}
