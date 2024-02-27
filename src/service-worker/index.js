@@ -4,11 +4,14 @@ import fetchResources from './static-resources.js';
 import { fetchTemplates, populateTemplate } from './templates.js';
 import { queueAndAttemptRequest, syncRequests } from 'restful-queue';
 import { modifyStateWithRequest } from './modify-state.js';
+import { initStream } from './stream.js';
 
 const state = new State();
 
 // Call fetchData every time the service worker is started to populate the state object from cache
 fetchData(state);
+
+initStream(state);
 
 self.addEventListener('install', event => {
 	event.waitUntil(Promise.all([

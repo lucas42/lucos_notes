@@ -3,6 +3,7 @@ import mustacheExpress from 'mustache-express';
 import { middleware as authMiddleware } from './auth.js';
 import state, {getInfoCheck} from './statefs.js';
 import { ValidationError, NotFoundError } from '../classes/state.js';
+import { startup as websocketStartup } from './websocket.js';
 
 const app = express();
 app.auth = authMiddleware;
@@ -51,18 +52,38 @@ app.get('/todo.json', catchErrors(async (req, res) => {
 }));
 app.put('/api/list/:slug', catchErrors(async (req, res) => {
 	await state.setList(req.params.slug, req.body);
+	app.websocket.send({
+		method: req.method,
+		path: req.url,
+		body: req.body,
+	})
 	res.status(204).send();
 }));
 app.put('/api/item/:uuid', catchErrors(async (req, res) => {
 	await state.setItem(req.params.uuid, req.body);
+	app.websocket.send({
+		method: req.method,
+		path: req.url,
+		body: req.body,
+	})
 	res.status(204).send();
 }));
 app.delete('/api/list/:slug', catchErrors(async (req, res) => {
 	await state.deleteList(req.params.slug, true);
+	app.websocket.send({
+		method: req.method,
+		path: req.url,
+		body: req.body,
+	})
 	res.status(204).send();
 }));
 app.delete('/api/item/:uuid', catchErrors(async (req, res) => {
 	await state.deleteItem(req.params.uuid, true);
+	app.websocket.send({
+		method: req.method,
+		path: req.url,
+		body: req.body,
+	})
 	res.status(204).send();
 }));
 
@@ -97,6 +118,9 @@ app.use((error, req, res, next) => {
 	}
 });
 
-app.listen(port, function () {
+const server = app.listen(port, function () {
 	console.log('App listening on port ' + port);
 });
+
+
+websocketStartup(server, app);

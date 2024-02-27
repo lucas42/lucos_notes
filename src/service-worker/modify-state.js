@@ -8,8 +8,16 @@ export async function modifyStateWithOutstandingRequests(state) {
 }
 
 export async function modifyStateWithRequest(state, request) {
+	let body = null;
+	if (request.method === 'PUT') {
+		body = await request.json();
+	}
 	const url = new URL(request.url);
-	const urlparts = url.pathname.split('/');
+	return modifyState(state, request.method, url.pathname, body, false);
+}
+
+export function modifyState(state, method, pathname, body, hardDelete) {
+	const urlparts = pathname.split('/');
 	urlparts.shift(); //pathname always starts with a slash, so ignore first part.
 	const component = urlparts.shift();
 	if (component !== 'api') throw new Error("Can only modify state from API requests");
@@ -18,22 +26,22 @@ export async function modifyStateWithRequest(state, request) {
 	switch(objectType) {
 		case 'list':
 			const slug = urlparts.shift();
-			if (request.method === 'PUT') {
-				return state.setList(slug, await request.json());
-			} else if (request.method === 'DELETE') {
-				return state.deleteList(slug, false);
+			if (method === 'PUT') {
+				return state.setList(slug, body);
+			} else if (method === 'DELETE') {
+				return state.deleteList(slug, hardDelete);
 			} else {
-				throw new Error(`Unsupported method for lists ${request.method}`);
+				throw new Error(`Unsupported method for lists ${method}`);
 			}
 			break;
 		case 'item':
 			const uuid = urlparts.shift();
-			if (request.method === 'PUT') {
-				return state.setItem(uuid, await request.json());
-			} else if (request.method === 'DELETE') {
-				return state.deleteItem(uuid, false);
+			if (method === 'PUT') {
+				return state.setItem(uuid, body);
+			} else if (method === 'DELETE') {
+				return state.deleteItem(uuid, hardDelete);
 			} else {
-				throw new Error(`Unsupported method for items ${request.method}`);
+				throw new Error(`Unsupported method for items ${method}`);
 			}
 			break;
 		default:

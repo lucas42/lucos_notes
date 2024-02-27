@@ -4,4 +4,5 @@ import './components/edit-item.js';
 import './components/delete-item.js';
 import './components/delete-list.js';
 import './components/sync-button.js';
+import './stream.js';
 import './load-service-worker.js';
