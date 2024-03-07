@@ -12,6 +12,7 @@ const port = process.env.PORT || 8004;
 app.engine('mustache', mustacheExpress());
 app.set('view engine', 'mustache');
 app.set('views', `./templates`);
+app.use(express.json());
 
 // Avoid authentication for _info, so call before invoking auth middleware
 app.get('/_info', catchErrors(async (req, res) => {
@@ -32,14 +33,23 @@ app.get('/_info', catchErrors(async (req, res) => {
 	});
 }));
 
-
-app.use((req, res, next) => app.auth(req, res, next));
-app.use(express.json());
+// Let resources bypass authentication, so service worker can update in the background
 app.use(express.static('./resources', {extensions: ['json']}));
 
+app.use((req, res, next) => app.auth(req, res, next));
 
 app.get('/', (req, res) => {
 	res.redirect("/todo/");
+});
+
+// Endpoint that's purely for authentication purposes (which won't be handled by the service worker)
+app.get('/login', (req, res) => {
+
+	// Check the redirect query to avoid open redirect vulnerabilities
+	if (!req.query.redirect_path?.startsWith("/todo")) {
+		throw new ValidationError("Invalid redirect_path parameter");
+	}
+	res.redirect(req.query.redirect_path);
 });
 app.get('/todo', catchErrors(async (req, res) => {
 	res.render("index", await state.getLists());

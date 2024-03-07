@@ -14,11 +14,11 @@ export function initStream(state) {
 		socket.addEventListener('message', messageReceived);
 	}
 
-	function socketOpened(domEvent) {
+	function socketOpened(event) {
 		console.log('WebSocket Connected (SW)');
 	}
 
-	function socketClosed(domEvent) {
+	function socketClosed(event) {
 		console.warn('WebSocket Closed (SW)', event.code, event.reason);
 
 		/*
@@ -27,9 +27,9 @@ export function initStream(state) {
 		window.setTimeout(connect, 5000);
 	}
 
-	async function messageReceived(domEvent) {
+	async function messageReceived(event) {
 		try {
-			const data = JSON.parse(domEvent.data);
+			const data = JSON.parse(event.data);
 			console.log("stream event (SW)", data);
 			modifyState(state, data.method, data.path, data.body, true);
 		} catch (error) {

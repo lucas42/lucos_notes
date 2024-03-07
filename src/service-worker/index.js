@@ -59,9 +59,15 @@ async function handleRequest(request) {
 				}
 			}
 		}
+
+		// All login logic happens server side
+		if (component === "login") {
+			return await fetch(request);
+		}
+
 		const cachedResponse = await caches.match(request);
 		if (cachedResponse) return cachedResponse;
-		console.error("Request not in cache", url.pathname, url.method, url.origin, url.search);
+		console.error("Request not in cache", url.pathname, request.method, url.origin, url.search);
 		return await fetch(request);
 	} catch(error) {
 		console.error("Error handling request", error, request);

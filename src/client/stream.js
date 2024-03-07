@@ -12,24 +12,34 @@ function connect() {
 	socket.addEventListener('message', messageReceived);
 }
 
-function socketOpened(domEvent) {
+function socketOpened(event) {
 	document.body.dataset['streaming'] = true;
 	console.log('WebSocket Connected');
 }
 
-function socketClosed(domEvent) {
+function socketClosed(event) {
 	document.body.dataset['streaming'] = false;
-	console.warn('WebSocket Closed', event.code, event.reason);
 
-	/*
-	 * Wait a few seconds and then try to reconnect
-	 */
-	window.setTimeout(connect, 5000);
+	// Handle "Forbidden" as a special case, and reauthenticate
+	// (This requires an internet connection, but the fact the websocket has just returned a forbidden error suggests
+	// there's been connectivity very recently)
+	if ("Forbidden" == event.reason) {
+		console.log("Websocket Forbidden, reauthenticating");
+		const loginpage = "/login?redirect_path="+encodeURIComponent(window.location.pathname);
+		window.location.assign(loginpage);
+	} else {
+		console.warn('WebSocket Closed', event.code, event.reason);
+
+		/*
+		 * Wait a few seconds and then try to reconnect
+		 */
+		window.setTimeout(connect, 5000);
+	}
 }
 
-async function messageReceived(domEvent) {
+async function messageReceived(event) {
 	try {
-		const data = JSON.parse(domEvent.data);
+		const data = JSON.parse(event.data);
 		console.log("stream event", data);
 		if (data.method == "DELETE" && data.path.startsWith("/api/list/")) {
 			location.href = "/";
