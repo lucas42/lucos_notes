@@ -1,12 +1,5 @@
-function connect() {
-	const streamStatus = new BroadcastChannel("stream_status");
-	streamStatus.addEventListener("message", streamStatusMessage);
-	const dataUpdates = new BroadcastChannel("data_updates");
-	dataUpdates.addEventListener("message", messageReceived);
-	streamStatus.postMessage("client-loaded"); // This tells the service worker a new client is listened, so to re-send the latest state
-}
-
-function streamStatusMessage(event) {
+const streamStatus = new BroadcastChannel("stream_status");
+streamStatus.addEventListener("message", function streamStatusMessage(event) {
 	switch (event.data) {
 		case "opened":
 			document.body.dataset['streaming'] = true;
@@ -20,23 +13,19 @@ function streamStatusMessage(event) {
 			window.location.assign(loginpage);
 			break;
 	}
-}
+});
 
-async function messageReceived(event) {
-	try {
-		const data = event.data;
+const dataUpdates = new BroadcastChannel("data_updates");
+dataUpdates.addEventListener("message", function messageReceived(event) {
 
-		// If the currently visible list has been deleted, return to the homepage
-		if (data.method == "DELETE" && data.path == "/api/list/"+encodeURIComponent(document.body.dataset.slug)) {
-			location.href = "/";
+	// If the currently visible list has been deleted, return to the homepage
+	if (event.data.method == "DELETE" && event.data.path == "/api/list/"+encodeURIComponent(document.body.dataset.slug)) {
+		location.href = "/";
 
-		// Otherwise, just refresh the current page to get the lastest from the service worker
-		} else {
-			location.reload();
-		}
-	} catch (error) {
-		console.warn("Error handling stream event", error);
+	// Otherwise, just refresh the current page to get the lastest from the service worker
+	} else {
+		location.reload();
 	}
-}
+});
 
-connect();
+streamStatus.postMessage("client-loaded"); // This tells the service worker a new client is listened, so to re-send the latest state
