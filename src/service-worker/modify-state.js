@@ -1,5 +1,7 @@
 import { getOutstandingRequests } from 'restful-queue';
 
+const dataUpdates = new BroadcastChannel("data_updates");
+
 export async function modifyStateWithOutstandingRequests(state) {
 	const outstandingRequests = await getOutstandingRequests();
 	for (const request of outstandingRequests) {
@@ -16,7 +18,7 @@ export async function modifyStateWithRequest(state, request) {
 	return modifyState(state, request.method, url.pathname, body, false);
 }
 
-export function modifyState(state, method, pathname, body, hardDelete) {
+export async function modifyState(state, method, pathname, body, hardDelete) {
 	const urlparts = pathname.split('/');
 	urlparts.shift(); //pathname always starts with a slash, so ignore first part.
 	const component = urlparts.shift();
@@ -27,9 +29,9 @@ export function modifyState(state, method, pathname, body, hardDelete) {
 		case 'list':
 			const slug = urlparts.shift();
 			if (method === 'PUT') {
-				return state.setList(slug, body);
+				await state.setList(slug, body);
 			} else if (method === 'DELETE') {
-				return state.deleteList(slug, hardDelete);
+				await state.deleteList(slug, hardDelete);
 			} else {
 				throw new Error(`Unsupported method for lists ${method}`);
 			}
@@ -37,9 +39,9 @@ export function modifyState(state, method, pathname, body, hardDelete) {
 		case 'item':
 			const uuid = urlparts.shift();
 			if (method === 'PUT') {
-				return state.setItem(uuid, body);
+				await state.setItem(uuid, body);
 			} else if (method === 'DELETE') {
-				return state.deleteItem(uuid, hardDelete);
+				await state.deleteItem(uuid, hardDelete);
 			} else {
 				throw new Error(`Unsupported method for items ${method}`);
 			}
@@ -47,4 +49,5 @@ export function modifyState(state, method, pathname, body, hardDelete) {
 		default:
 			throw new Error(`Unknown type ${objectType}`);
 	}
+	dataUpdates.postMessage({method, path: pathname, body, hardDelete});
 }

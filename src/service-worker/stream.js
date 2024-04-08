@@ -3,7 +3,6 @@ let socket;
 
 export function initStream(state) {
 	const streamStatus = new BroadcastChannel("stream_status");
-	const dataUpdates = new BroadcastChannel("data_updates");
 	streamStatus.addEventListener("message", streamStatusMessageReceived);
 	let latestSocketState = "unknown";
 
@@ -45,7 +44,6 @@ export function initStream(state) {
 			const data = JSON.parse(event.data);
 			console.log("stream event (SW)", data);
 			modifyState(state, data.method, data.path, data.body, true);
-			dataUpdates.postMessage(data);
 		} catch (error) {
 			console.warn("Error handling stream event (SW)", error);
 		}
