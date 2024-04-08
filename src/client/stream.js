@@ -1,48 +1,36 @@
-let socket;
-
 function connect() {
-	// If there's already an active websocket, then no need to do more
-	if (socket && [WebSocket.CONNECTING, WebSocket.OPEN].includes(socket.readyState)) return;
-
-	const protocol = location.protocol === "https:" ? "wss" : "ws";
-	socket = new WebSocket(`${protocol}://${location.host}/stream`);
-	socket.addEventListener('open', socketOpened);
-	socket.addEventListener('close', socketClosed);
-	socket.addEventListener('error', socketClosed);
-	socket.addEventListener('message', messageReceived);
+	const streamStatus = new BroadcastChannel("stream_status");
+	streamStatus.addEventListener("message", streamStatusMessage);
+	const dataUpdates = new BroadcastChannel("data_updates");
+	dataUpdates.addEventListener("message", messageReceived);
+	streamStatus.postMessage("client-loaded"); // This tells the service worker a new client is listened, so to re-send the latest state
 }
 
-function socketOpened(event) {
-	document.body.dataset['streaming'] = true;
-	console.log('WebSocket Connected');
-}
-
-function socketClosed(event) {
-	document.body.dataset['streaming'] = false;
-
-	// Handle "Forbidden" as a special case, and reauthenticate
-	// (This requires an internet connection, but the fact the websocket has just returned a forbidden error suggests
-	// there's been connectivity very recently)
-	if ("Forbidden" == event.reason) {
-		console.log("Websocket Forbidden, reauthenticating");
-		const loginpage = "/login?redirect_path="+encodeURIComponent(window.location.pathname);
-		window.location.assign(loginpage);
-	} else {
-		console.warn('WebSocket Closed', event.code, event.reason);
-
-		/*
-		 * Wait a few seconds and then try to reconnect
-		 */
-		window.setTimeout(connect, 5000);
+function streamStatusMessage(event) {
+	switch (event.data) {
+		case "opened":
+			document.body.dataset['streaming'] = true;
+			break;
+		case "closed":
+			document.body.dataset['streaming'] = false;
+			break;
+		case "forbidden":
+			console.log("Access Forbidden, reauthenticating");
+			const loginpage = "/login?redirect_path="+encodeURIComponent(window.location.pathname);
+			window.location.assign(loginpage);
+			break;
 	}
 }
 
 async function messageReceived(event) {
 	try {
-		const data = JSON.parse(event.data);
-		console.log("stream event", data);
-		if (data.method == "DELETE" && data.path.startsWith("/api/list/")) {
+		const data = event.data;
+
+		// If the currently visible list has been deleted, return to the homepage
+		if (data.method == "DELETE" && data.path == "/api/list/"+encodeURIComponent(document.body.dataset.slug)) {
 			location.href = "/";
+
+		// Otherwise, just refresh the current page to get the lastest from the service worker
 		} else {
 			location.reload();
 		}
