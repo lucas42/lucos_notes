@@ -1,5 +1,4 @@
-import ControlButton from './control-button.js';
-
+import AbstractControlButton from './abstract-control-button.js';
 
 async function deleteList(slug) {
 	const resp = await fetch('/api/list/'+encodeURIComponent(slug), {
@@ -16,7 +15,7 @@ async function deleteList(slug) {
 }
 
 
-class DeleteListButton extends ControlButton {
+class DeleteListButton extends AbstractControlButton {
 	constructor() {
 		super("Delete List");
 		const component = this;

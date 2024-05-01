@@ -1,6 +1,7 @@
-export default class ControlButton extends HTMLElement {
+export default class AbstractControlButton extends HTMLElement {
 	constructor(label) {
 		super();
+		if (this.constructor == AbstractControlButton) throw new Error("Abstract class shouldn't be instantiated");
 		const shadow = this.attachShadow({mode: 'open'});
 
 		const style = document.createElement('style');

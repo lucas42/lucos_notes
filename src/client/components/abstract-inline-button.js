@@ -1,6 +1,7 @@
-export default class EditElement extends HTMLElement {
+export default class AbstractInlineButton extends HTMLElement {
 	constructor() {
 		super();
+		if (this.constructor == AbstractInlineButton) throw new Error("Abstract class shouldn't be instantiated");
 		const shadow = this.attachShadow({mode: 'closed'});
 
 		const style = document.createElement('style');

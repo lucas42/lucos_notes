@@ -1,5 +1,5 @@
-import EditElement from './edit-element.js';
-import ControlButton from './control-button.js';
+import AbstractInlineButton from './abstract-inline-button.js';
+import AbstractControlButton from './abstract-control-button.js';
 import { v4 as uuidv4 } from 'uuid';
 
 async function editItem(uuid, list, oldName, oldUrl) {
@@ -21,7 +21,7 @@ async function editItem(uuid, list, oldName, oldUrl) {
 	}
 }
 
-class EditItemElement extends EditElement {
+class EditItemElement extends AbstractInlineButton {
 	constructor() {
 		super();
 		const component = this;
@@ -31,10 +31,10 @@ class EditItemElement extends EditElement {
 		});
 	}
 }
-customElements.define('edit-item', EditItemElement);
+customElements.define('edit-item-button', EditItemElement);
 
 
-class NewItemButton extends ControlButton {
+class NewItemButton extends AbstractControlButton {
 	constructor() {
 		super("Add Item");
 		const component = this;

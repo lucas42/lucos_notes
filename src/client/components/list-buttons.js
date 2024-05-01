@@ -1,5 +1,5 @@
-import EditElement from './edit-element.js';
-import ControlButton from './control-button.js';
+import AbstractInlineButton from './abstract-inline-button.js';
+import AbstractControlButton from './abstract-control-button.js';
 
 async function editList(slug, oldName, oldIcon) {
 	const name = window.prompt("List Name", oldName || slug);
@@ -21,7 +21,7 @@ async function editList(slug, oldName, oldIcon) {
 	}
 }
 
-class EditListElement extends EditElement {
+class EditListElement extends AbstractInlineButton {
 	constructor() {
 		super();
 		const component = this;
@@ -31,10 +31,10 @@ class EditListElement extends EditElement {
 		});
 	}
 }
-customElements.define('edit-list', EditListElement);
+customElements.define('edit-list-button', EditListElement);
 
 
-class NewListButton extends ControlButton {
+class NewListButton extends AbstractControlButton {
 	constructor() {
 		super("New List");
 		const component = this;

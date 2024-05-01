@@ -1,5 +1,3 @@
-import EditElement from './edit-element.js';
-import ControlButton from './control-button.js';
 import { v4 as uuidv4 } from 'uuid';
 
 async function deleteItem(uuid) {

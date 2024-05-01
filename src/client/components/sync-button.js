@@ -1,8 +1,6 @@
-import ControlButton from './control-button.js';
+import AbstractControlButton from './abstract-control-button.js';
 
-
-
-class SyncButton extends ControlButton {
+class SyncButton extends AbstractControlButton {
 	constructor() {
 
 		super("Sync Data");

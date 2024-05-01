@@ -1,8 +1,8 @@
 import 'lucos_navbar';
-import './components/edit-list.js';
-import './components/edit-item.js';
-import './components/delete-item.js';
-import './components/delete-list.js';
+import './components/item-buttons.js';
+import './components/list-buttons.js';
+import './components/delete-item-button.js';
+import './components/delete-list-button.js';
 import './components/sync-button.js';
 import './stream.js';
 import './load-service-worker.js';
