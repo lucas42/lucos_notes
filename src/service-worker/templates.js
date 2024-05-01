@@ -12,7 +12,7 @@ export async function fetchTemplates() {
 	]);
 }
 
-export async function getTemplate(templateid) {
+async function getTemplate(templateid) {
 	const cache = await caches.open(TEMPLATE_CACHE);
 	const request = new Request(TEMPLATE_PATH + templateid + '.mustache');
 	const response = await cache.match(request);
