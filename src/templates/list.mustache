@@ -20,7 +20,7 @@
 			<li class="item{{#deleted}} deleted{{/deleted}}">
 				<span class="icon">{{icon}}</span>
 				<edit-item-button uuid="{{uuid}}" name="{{name}}" url="{{url}}" list="{{slug}}"></edit-item-button>
-				<delete-item uuid="{{uuid}}"></delete-item>
+				<delete-item-button uuid="{{uuid}}"></delete-item-button>
 				{{#url}}<a href="{{url}}" target="__blank">{{name}}</a>{{/url}}
 				{{^url}}<span>{{name}}</span>{{/url}}
 				{{#unsynced}}<span class="pending" title="Sync pending">⌁</span>{{/unsynced}}

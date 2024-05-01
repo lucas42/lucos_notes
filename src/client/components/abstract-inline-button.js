@@ -1,5 +1,5 @@
 export default class AbstractInlineButton extends HTMLElement {
-	constructor() {
+	constructor(icon = "✎", hoverColour = "#007", loadingColour = "#08a") {
 		super();
 		if (this.constructor == AbstractInlineButton) throw new Error("Abstract class shouldn't be instantiated");
 		const shadow = this.attachShadow({mode: 'closed'});
@@ -11,13 +11,12 @@ export default class AbstractInlineButton extends HTMLElement {
 				color: #99a;
 			}
 			:host(:hover) {
-				font-weight: bold;
-				color: #007;
+				color: ${hoverColour};
 			}
 			:host-context([data-loading]) {
 				animation: diagonal_move 4s linear infinite;
 				background-clip: text;
-				background-image: radial-gradient(#99a, #08a);
+				background-image: radial-gradient(#99a, ${loadingColour});
 				background-position: 0;
 				color: transparent;
 			}
@@ -29,6 +28,6 @@ export default class AbstractInlineButton extends HTMLElement {
 		`;
 
 		shadow.append(style);
-		shadow.append(document.createTextNode("✎"));
+		shadow.append(document.createTextNode(icon));
 	}
 }
