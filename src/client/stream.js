@@ -2,10 +2,10 @@ const streamStatus = new BroadcastChannel("stream_status");
 streamStatus.addEventListener("message", function streamStatusMessage(event) {
 	switch (event.data) {
 		case "opened":
-			document.body.dataset['streaming'] = true;
+			document.getElementsByTagName('lucos-navbar')[0].setAttribute('streaming', 'active');
 			break;
 		case "closed":
-			document.body.dataset['streaming'] = false;
+			document.getElementsByTagName('lucos-navbar')[0].setAttribute('streaming', 'stopped');
 			break;
 		case "forbidden":
 			console.log("Access Forbidden, reauthenticating");
