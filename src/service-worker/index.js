@@ -5,6 +5,7 @@ import { fetchTemplates, populateTemplate } from './templates.js';
 import { queueAndAttemptRequest, syncRequests } from 'restful-queue';
 import { modifyStateWithRequest } from './modify-state.js';
 import { initStream } from './stream.js';
+import './update.js';
 
 const state = new State();
 

@@ -15,7 +15,7 @@ export default async () => {
 		plugins: [
 			// Get the hashes of all the resources & templates to embed in a comment in service worker
 			new webpack.BannerPlugin({
-				banner: `Resource Hash: ${(await hashElement("./resources")).hash}\nTemplate Hash: ${(await hashElement("./templates")).hash}`,
+				banner: `Resource Hash: ${(await hashElement("./resources")).hash}\nClient JS Hash: ${(await hashElement("./client")).hash}\nTemplate Hash: ${(await hashElement("./templates")).hash}`,
 				include: 'serviceworker',
 			}),
 		],
