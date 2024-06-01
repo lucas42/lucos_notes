@@ -34,7 +34,7 @@ async function getAllTemplates() {
 }
 
 export async function populateTemplate(data) {
-	const template = await(getTemplate("page"));
+	const template = await getTemplate("page");
 	const html = mustache.render(template, data, await getAllTemplates());
 	return new Response(html,{headers:{'Content-Type':'text/html'}});
 }
