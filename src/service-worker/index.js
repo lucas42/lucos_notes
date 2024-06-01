@@ -54,9 +54,9 @@ async function handleRequest(request) {
 			const slug = decodeURI(urlparts.shift());
 			if (request.method === "GET") {
 				if (!slug) {
-					return populateTemplate('index', await state.getLists());
+					return populateTemplate(await state.getLists());
 				} else {
-					return populateTemplate('list', await state.getList(slug));
+					return populateTemplate(await state.getList(slug));
 				}
 			}
 		}
@@ -72,7 +72,8 @@ async function handleRequest(request) {
 		return await fetch(request);
 	} catch(error) {
 		console.error("Error handling request", error, request);
-		return populateTemplate('error', error);
+		error.pagetype = "error";
+		return populateTemplate(error);
 	}
 }
 

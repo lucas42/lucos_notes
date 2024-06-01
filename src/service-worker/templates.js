@@ -6,7 +6,8 @@ import mustache from "mustache";
 export async function fetchTemplates() {
 	const cache = await caches.open(TEMPLATE_CACHE);
 	await cache.addAll([
-		TEMPLATE_PATH + "index.mustache",
+		TEMPLATE_PATH + "page.mustache",
+		TEMPLATE_PATH + "listoflists.mustache",
 		TEMPLATE_PATH + "list.mustache",
 		TEMPLATE_PATH + "error.mustache",
 	]);
@@ -19,8 +20,21 @@ async function getTemplate(templateid) {
 	return response.text();
 }
 
-export async function populateTemplate(templateid, data) {
-	const template = await(getTemplate(templateid));
-	const html = mustache.render(template, data);
+async function getAllTemplates() {
+	const [listTemplate, listoflistsTemplate, errorTemplate] = await Promise.all([
+		getTemplate('list'),
+		getTemplate('listoflists'),
+		getTemplate('error'),
+	]);
+	return {
+		'list': listTemplate,
+		'listoflists': listoflistsTemplate,
+		'error': errorTemplate,
+	}
+}
+
+export async function populateTemplate(data) {
+	const template = await(getTemplate("page"));
+	const html = mustache.render(template, data, await getAllTemplates());
 	return new Response(html,{headers:{'Content-Type':'text/html'}});
 }

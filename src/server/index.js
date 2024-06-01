@@ -1,5 +1,5 @@
 import express from 'express';
-import mustacheExpress from 'mustache-express';
+import mustacheExpress from './templates.js';
 import { middleware as authMiddleware } from './auth.js';
 import state, {getInfoCheck} from './statefs.js';
 import { ValidationError, NotFoundError } from '../classes/state.js';
@@ -9,7 +9,7 @@ const app = express();
 app.auth = authMiddleware;
 const port = process.env.PORT || 8004;
 
-app.engine('mustache', mustacheExpress());
+app.engine('mustache', mustacheExpress);
 app.set('view engine', 'mustache');
 app.set('views', `./templates`);
 app.use(express.json());
@@ -52,10 +52,10 @@ app.get('/login', (req, res) => {
 	res.redirect(req.query.redirect_path);
 });
 app.get('/todo', catchErrors(async (req, res) => {
-	res.render("index", await state.getLists());
+	res.render("page", await state.getLists());
 }));
 app.get('/todo/:slug', catchErrors(async (req, res) => {
-	res.render("list", await state.getList(req.params.slug));
+	res.render("page", await state.getList(req.params.slug));
 }));
 app.get('/todo.json', catchErrors(async (req, res) => {
 	res.json(await state.getRawData());
@@ -124,7 +124,7 @@ app.use((error, req, res, next) => {
 	if (req.path.startsWith("/api") || req.path == '/_info') {
 		res.json({errorMessage: error.message});
 	} else {
-		res.render("error", {message: error.message});
+		res.render("page", {message: error.message, pagetype: "error", name: error.name});
 	}
 });
 

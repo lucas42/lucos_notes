@@ -49,6 +49,7 @@ export default class State {
 		return {
 			lists,
 			hasUnsyncedData: this.#hasUnsyncedData(),
+			pagetype: 'listoflists',
 		};
 	}
 	async getList(slug) {
@@ -65,6 +66,7 @@ export default class State {
 			hasUnsyncedData: this.#hasUnsyncedData(),
 			deleted: this.#data.lists[slug].deleted,
 			icon: this.#data.lists[slug].icon || '📋',
+			pagetype: 'list',
 		}
 	}
 	async setList(slug, data) {

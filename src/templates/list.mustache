@@ -1,17 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html> 
-<html xmlns="http://www.w3.org/1999/xhtml">
-	<head>
-		<link rel="apple-touch-icon" href="/icon.png" />
-		<title>Todo List - {{name}}</title>
-		<meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width" />
-		<link href="/style.css" rel="stylesheet">
-		<link rel="icon" type="image/png" href="/icon.png" />
-		<meta name="mobile-web-app-capable" content="yes" />
-		<meta name="apple-mobile-web-app-status-bar-style" content="black" />
-	</head>
-	<body data-type="list" data-slug="{{slug}}">
-		<lucos-navbar font="'Reenie Beanie', Textile, cursive">{{name}}</lucos-navbar>
 		<nav>
 			<a href="/todo/">&lt;- View all Todo Lists</a>
 		</nav>
@@ -32,6 +18,3 @@
 			<delete-list-button slug="{{slug}}" empty="{{^items}}true{{/items}}"></delete-list-button>
 			<sync-button></sync-button>
 		</div>
-		<script type="text/javascript" src="/client.js"></script>
-	</body>
-</html>
