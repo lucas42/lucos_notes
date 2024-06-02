@@ -26,7 +26,7 @@ nav a:hover {
 	height: 1.8em;
 	display: block;
 }
-#todo {
+main {
 	margin: 0;
 	padding: 1.5em 2em 2em;
 	background: #edb;
@@ -35,31 +35,35 @@ nav a:hover {
 	-webkit-box-shadow: 5px 5px 10px 0px #000;
 	margin-bottom: 10px;
 }
-#todo a {
+main > ul {
+	margin: 0;
+	padding: 0;
+}
+main a {
 	font-style: italic;
 	color: inherit;
     text-decoration-thickness: from-font;
     text-decoration-color: #cce;
 }
-#todo a:hover {
+main a:hover {
 	text-decoration: underline;
 }
-#todo>li>*.deleted {
+main li>*.deleted {
 	text-decoration: line-through;
 	opacity: 0.5;
 }
-#todo>li {
+main li {
 	padding: 0.3em;
 	border-bottom: solid thin #AAF;
 	text-overflow: ellipsis;
 	overflow: hidden;
 }
-#todo>.list>a,
-#todo>.list input {
+main .list>a,
+main .list input {
 	text-decoration: none;
 	color: inherit;
 }
-#todo>li.spare {
+main li.spare {
 	list-style: none;
 	border-bottom: none;
 	height: 1em;

@@ -27,7 +27,7 @@ dataUpdates.addEventListener("message", async function messageReceived(event) {
 		const parser = new DOMParser();
 		const latestResponse = await fetch(location.href);
 		const latestPage = parser.parseFromString(await latestResponse.text(), latestResponse.headers.get("Content-Type").split(";")[0]);
-		document.getElementById("todo").replaceWith(latestPage.getElementById("todo"));
+		document.querySelector("main").replaceWith(latestPage.querySelector("main"));
 	}
 });
 
