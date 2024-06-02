@@ -16,15 +16,18 @@ streamStatus.addEventListener("message", function streamStatusMessage(event) {
 });
 
 const dataUpdates = new BroadcastChannel("data_updates");
-dataUpdates.addEventListener("message", function messageReceived(event) {
+dataUpdates.addEventListener("message", async function messageReceived(event) {
 
 	// If the currently visible list has been deleted, return to the homepage
 	if (event.data.method == "DELETE" && event.data.path == "/api/list/"+encodeURIComponent(document.body.dataset.slug)) {
 		location.href = "/";
 
-	// Otherwise, just refresh the current page to get the lastest from the service worker
+	// Otherwise, refresh the main content in the page to get the latest from the service worker
 	} else {
-		location.reload();
+		const parser = new DOMParser();
+		const latestResponse = await fetch(location.href);
+		const latestPage = parser.parseFromString(await latestResponse.text(), latestResponse.headers.get("Content-Type").split(";")[0]);
+		document.getElementById("todo").replaceWith(latestPage.getElementById("todo"));
 	}
 });
 

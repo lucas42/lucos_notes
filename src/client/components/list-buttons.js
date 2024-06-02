@@ -1,5 +1,6 @@
 import AbstractInlineButton from './abstract-inline-button.js';
 import AbstractControlButton from './abstract-control-button.js';
+const dataUpdates = new BroadcastChannel("data_updates");
 
 
 async function editList(slug, oldName, oldIcon) {
@@ -14,10 +15,12 @@ async function editList(slug, oldName, oldIcon) {
 		},
 		body: JSON.stringify({ name, icon }),
 	});
-	if (resp.ok) {
-		location.reload();
-	} else {
+	if (!resp.ok) {
 		alert("Failed to update List");
+
+	// Normally the Service Worker sends the update message, but if the response isn't served by the SW, that needs doing here
+	} else if (resp.status != 202) {
+		dataUpdates.postMessage({method: 'PUT', path: '/api/list/'+encodeURIComponent(slug), body:JSON.stringify({ name, icon }), hardDelete: true});
 	}
 }
 
@@ -28,10 +31,12 @@ async function deleteList(slug) {
 			'Content-Type': "application/json",
 		},
 	});
-	if (resp.ok) {
-		location.href = '/';
-	} else {
+	if (!resp.ok) {
 		alert("Failed to delete List");
+
+	// Normally the Service Worker sends the update message, but if the response isn't served by the SW, that needs doing here
+	} else if (resp.status != 202) {
+		dataUpdates.postMessage({method: 'DELETE', path: '/api/list/'+encodeURIComponent(slug), body:null, hardDelete: true});
 	}
 }
 
@@ -42,6 +47,7 @@ class EditListElement extends AbstractInlineButton {
 		component.addEventListener('click', async () => {
 			component.dataset.loading = true;
 			await editList(component.getAttribute('slug'), component.getAttribute('name'), component.getAttribute('icon'));
+			delete component.dataset.loading;
 		});
 	}
 }
@@ -56,6 +62,7 @@ class NewListButton extends AbstractControlButton {
 			if (!slug) return console.warn("no slug given, giving up");
 			component.dataset.loading = true;
 			await editList(slug);
+			delete component.dataset.loading;
 		});
 	}
 }
@@ -69,6 +76,7 @@ class DeleteListButton extends AbstractControlButton {
 			if (!component.getAttribute('empty') && !window.confirm("This list still contains items.  Are you sure you want to delete it?")) return;
 			component.dataset.loading = true;
 			await deleteList(component.getAttribute('slug'));
+			delete component.dataset.loading;
 		});
 	}
 }

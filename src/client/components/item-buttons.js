@@ -1,6 +1,7 @@
 import AbstractInlineButton from './abstract-inline-button.js';
 import AbstractControlButton from './abstract-control-button.js';
 import { v4 as uuidv4 } from 'uuid';
+const dataUpdates = new BroadcastChannel("data_updates");
 
 async function editItem(uuid, list, oldName, oldUrl) {
 	const name = window.prompt("Item", oldName);
@@ -14,10 +15,12 @@ async function editItem(uuid, list, oldName, oldUrl) {
 		},
 		body: JSON.stringify({ name, url, list }),
 	});
-	if (resp.ok) {
-		location.reload();
-	} else {
+	if (!resp.ok) {
 		alert("Failed to update Item");
+
+	// Normally the Service Worker sends the update message, but if the response isn't served by the SW, that needs doing here
+	} else if (resp.status != 202) {
+		dataUpdates.postMessage({method: 'PUT', path: '/api/item/'+encodeURIComponent(uuid), body:JSON.stringify({ name, url, list }), hardDelete: true});
 	}
 }
 
@@ -28,10 +31,12 @@ async function deleteItem(uuid) {
 			'Content-Type': "application/json",
 		},
 	});
-	if (resp.ok) {
-		location.reload();
-	} else {
+	if (!resp.ok) {
 		alert("Failed to delete Item");
+
+	// Normally the Service Worker sends the update message, but if the response isn't served by the SW, that needs doing here
+	} else if (resp.status != 202) {
+		dataUpdates.postMessage({method: 'DELETE', path: '/api/item/'+encodeURIComponent(uuid), body:null, hardDelete: true});
 	}
 }
 
@@ -42,6 +47,7 @@ class EditItemElement extends AbstractInlineButton {
 		component.addEventListener('click', async () => {
 			component.dataset.loading = true;
 			await editItem(component.getAttribute('uuid'), component.getAttribute('list'), component.getAttribute('name'), component.getAttribute('url'));
+			delete component.dataset.loading;
 		});
 	}
 }
@@ -55,6 +61,7 @@ class NewItemButton extends AbstractControlButton {
 		this.addEventListener("click", async () => {
 			component.dataset.loading = true;
 			await editItem(uuidv4(), component.getAttribute('list'));
+			delete component.dataset.loading;
 		});
 	}
 }
@@ -67,6 +74,7 @@ class DeleteItemButton extends AbstractInlineButton {
 		component.addEventListener('click', async () => {
 			component.dataset.loading = true;
 			await deleteItem(component.getAttribute('uuid'));
+			delete component.dataset.loading;
 		});
 	}
 }
