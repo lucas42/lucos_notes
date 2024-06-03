@@ -61,7 +61,7 @@ app.get('/todo.json', catchErrors(async (req, res) => {
 	res.json(await state.getRawData());
 }));
 app.put('/api/list/:slug', catchErrors(async (req, res) => {
-	await state.setList(req.params.slug, req.body);
+	await state.setList(req.params.slug, req.body, false);
 	app.websocket.send({
 		method: req.method,
 		path: req.url,
@@ -70,7 +70,7 @@ app.put('/api/list/:slug', catchErrors(async (req, res) => {
 	res.status(204).send();
 }));
 app.put('/api/item/:uuid', catchErrors(async (req, res) => {
-	await state.setItem(req.params.uuid, req.body);
+	await state.setItem(req.params.uuid, req.body, false);
 	app.websocket.send({
 		method: req.method,
 		path: req.url,

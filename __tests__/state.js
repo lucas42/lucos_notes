@@ -415,4 +415,20 @@ describe('Check for unsynced data', () => {
 		await setItemPromise;
 		expect((await state.getLists()).hasUnsyncedData).toBe(true);
 	});
+	test('When data is passed with `alreadySynced` parameter, it never gets marked as unsynced', async () => {
+		const state = new State();
+		state.setRawData({lists:{}, items:{}});
+		expect((await state.getLists()).hasUnsyncedData).toBe(false);
+		await state.setItem('abc', {name: "New Item", list:'newlist'}, true);
+		expect((await state.getLists()).hasUnsyncedData).toBe(false);
+	});
+	test('When unsynced data is replaced by a call with `alreadySynced` parameter, it gets marked as synced', async () => {
+		const state = new State();
+		state.setRawData({lists:{}, items:{}});
+		await state.setList('newlist', {name: "New List"});
+		expect((await state.getLists()).hasUnsyncedData).toBe(true);
+		await state.setList('newlist', {name: "New List"}, true);
+		expect((await state.getLists()).hasUnsyncedData).toBe(false);
+	});
+
 });

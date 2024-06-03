@@ -18,7 +18,7 @@ export async function modifyStateWithRequest(state, request) {
 	return modifyState(state, request.method, url.pathname, body, false);
 }
 
-export async function modifyState(state, method, pathname, body, hardDelete) {
+export async function modifyState(state, method, pathname, body, fromServer) {
 	const urlparts = pathname.split('/');
 	urlparts.shift(); //pathname always starts with a slash, so ignore first part.
 	const component = urlparts.shift();
@@ -29,9 +29,9 @@ export async function modifyState(state, method, pathname, body, hardDelete) {
 		case 'list':
 			const slug = urlparts.shift();
 			if (method === 'PUT') {
-				await state.setList(slug, body);
+				await state.setList(slug, body, fromServer);
 			} else if (method === 'DELETE') {
-				await state.deleteList(slug, hardDelete);
+				await state.deleteList(slug, fromServer);
 			} else {
 				throw new Error(`Unsupported method for lists ${method}`);
 			}
@@ -39,9 +39,9 @@ export async function modifyState(state, method, pathname, body, hardDelete) {
 		case 'item':
 			const uuid = urlparts.shift();
 			if (method === 'PUT') {
-				await state.setItem(uuid, body);
+				await state.setItem(uuid, body, fromServer);
 			} else if (method === 'DELETE') {
-				await state.deleteItem(uuid, hardDelete);
+				await state.deleteItem(uuid, fromServer);
 			} else {
 				throw new Error(`Unsupported method for items ${method}`);
 			}
@@ -49,5 +49,5 @@ export async function modifyState(state, method, pathname, body, hardDelete) {
 		default:
 			throw new Error(`Unknown type ${objectType}`);
 	}
-	dataUpdates.postMessage({method, path: pathname, body, hardDelete});
+	dataUpdates.postMessage({method, path: pathname, body, fromServer});
 }

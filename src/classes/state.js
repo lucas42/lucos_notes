@@ -69,14 +69,14 @@ export default class State {
 			pagetype: 'list',
 		}
 	}
-	async setList(slug, data) {
+	async setList(slug, data, alreadySynced) {
 		await this.waitUntilDataLoaded;
-		this.#setListData(slug, data);
+		this.#setListData(slug, data, alreadySynced);
 		await this.syncFunction();
 	}
-	#setListData(slug, data={}) {
+	#setListData(slug, data={}, alreadySynced) {
 		data.items = this.#data.lists[slug]?.items || [];
-		data.unsynced = true;
+		if (!alreadySynced) data.unsynced = true;
 
 		// Using the raw string here would count emjoi as multiple characters, but the iterable protocol splits the string to codepoints, so each emoji is one
 		if (data.icon && [...data.icon].length > 1) data.icon = [...data.icon][0];
@@ -87,15 +87,15 @@ export default class State {
 			this.#data.lists[listslug].items = this.#data.lists[listslug].items.filter(uuid => (uuid !== itemuuid));
 		}
 	}
-	async setItem(uuid, data) {
+	async setItem(uuid, data, alreadySynced) {
 		await this.waitUntilDataLoaded;
 		if (!('list' in data) || !data.list) throw new ValidationError("Item is missing a list");
 		if (typeof data.list !== 'string') throw new ValidationError("Item's list slug is not a string");
 		const previousList = this.#data.items[uuid]?.list;
-		data.unsynced = true;
+		if (!alreadySynced) data.unsynced = true;
 		this.#data.items[uuid] = data;
 		if (!(data.list in this.#data.lists)) {
-			await this.#setListData(data.list);
+			await this.#setListData(data.list, {}, alreadySynced);
 		}
 		if (data.list !== previousList) {
 			this.#removeItemFromList(uuid, previousList);
