@@ -64,6 +64,7 @@ describe('Get, set and delete state data', () => {
 				{slug:'moarthings', name: "Even More Stuff", icon: "📋"},
 			],
 			hasUnsyncedData: false,
+			pagetype: 'listoflists',
 		});
 	});
 	test('Get a list in a format usable for templates', async	() => {
@@ -81,6 +82,7 @@ describe('Get, set and delete state data', () => {
 			],
 			hasUnsyncedData: false,
 			icon: "🛒",
+			pagetype: 'list',
 		});
 	});
 	test('Update list with a new name', async () => {
