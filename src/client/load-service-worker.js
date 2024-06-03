@@ -1,3 +1,4 @@
+const streamStatus = new BroadcastChannel("stream_status");
 try {
 	if (!('serviceWorker' in navigator)) throw "no service worker support";
 	const registration = await navigator.serviceWorker.register('/serviceworker.js');
@@ -17,6 +18,13 @@ try {
 	registration.update();
 	navigator.serviceWorker.addEventListener("controllerchange", () => {
 		window.location.reload();
+	});
+
+	// The websocket opening _could_ be because the server has restarted,
+	// so check whether a new service worker is available
+	// (Mostly useful for dev environments)
+	streamStatus.addEventListener("message", function streamStatusMessage(event) {
+		if (event.data == "opened") registration.update();
 	});
 } catch (error) {
 	console.error('ServiceWorker registration failed: ' + error);
