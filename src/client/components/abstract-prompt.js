@@ -104,6 +104,11 @@ export default class AbstractPrompt extends HTMLElement {
 			component.save(data);
 			component.remove();
 		});
+
+		// Close the component when escape button is pressed
+		document.addEventListener('keyup', e => {
+			if (e.key === "Escape") component.remove();
+		}, false);
 	}
 	connectedCallback() {
 		this.shadowRoot.querySelector("label > input").focus();
