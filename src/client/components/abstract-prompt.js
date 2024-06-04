@@ -23,6 +23,8 @@ export default class AbstractPrompt extends HTMLElement {
 				right: 3em;
 				background: rgb(100, 55, 25, 0.8);
 				border-radius: 5px;
+				max-width: 500px;
+				margin: auto;
 			}
 			h3 {
 				background-color: #211;
