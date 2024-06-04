@@ -27,7 +27,7 @@ export async function modifyState(state, method, pathname, body, fromServer) {
 	const objectType = urlparts.shift();
 	switch(objectType) {
 		case 'list':
-			const slug = urlparts.shift();
+			const slug = decodeURIComponent(urlparts.shift());
 			if (method === 'PUT') {
 				await state.setList(slug, body, fromServer);
 			} else if (method === 'DELETE') {
