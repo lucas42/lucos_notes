@@ -1,28 +1,8 @@
 import AbstractInlineButton from './abstract-inline-button.js';
 import AbstractControlButton from './abstract-control-button.js';
+import AbstractPrompt from './abstract-prompt.js';
 import { v4 as uuidv4 } from 'uuid';
 const dataUpdates = new BroadcastChannel("data_updates");
-
-async function editItem(uuid, list, oldName, oldUrl) {
-	const name = window.prompt("Item", oldName);
-	if (name === null) return;
-	const url = window.prompt("URL", oldUrl);
-	if (url === null) return;
-	const resp = await fetch('/api/item/'+encodeURIComponent(uuid), {
-		method: 'PUT',
-		headers: {
-			'Content-Type': "application/json",
-		},
-		body: JSON.stringify({ name, url, list }),
-	});
-	if (!resp.ok) {
-		alert("Failed to update Item");
-
-	// Normally the Service Worker sends the update message, but if the response isn't served by the SW, that needs doing here
-	} else if (resp.status != 202) {
-		dataUpdates.postMessage({method: 'PUT', path: '/api/item/'+encodeURIComponent(uuid), body:JSON.stringify({ name, url, list }), hardDelete: true});
-	}
-}
 
 async function deleteItem(uuid) {
 	const resp = await fetch('/api/item/'+encodeURIComponent(uuid), {
@@ -46,7 +26,8 @@ class EditItemElement extends AbstractInlineButton {
 		const component = this;
 		component.addEventListener('click', async () => {
 			component.dataset.loading = true;
-			await editItem(component.getAttribute('uuid'), component.getAttribute('list'), component.getAttribute('name'), component.getAttribute('url'));
+			const prompt = new ItemPrompt(component.getAttribute('uuid'), component.getAttribute('list'), component.getAttribute('name'), component.getAttribute('url'));
+			document.body.append(prompt);
 			delete component.dataset.loading;
 		});
 	}
@@ -60,7 +41,8 @@ class NewItemButton extends AbstractControlButton {
 		const component = this;
 		this.addEventListener("click", async () => {
 			component.dataset.loading = true;
-			await editItem(uuidv4(), component.getAttribute('list'));
+			const prompt = new ItemPrompt(uuidv4(), component.getAttribute('list'));
+			document.body.append(prompt);
 			delete component.dataset.loading;
 		});
 	}
@@ -79,3 +61,44 @@ class DeleteItemButton extends AbstractInlineButton {
 	}
 }
 customElements.define('delete-item-button', DeleteItemButton);
+
+class ItemPrompt extends AbstractPrompt {
+	constructor(uuid, list, name, url) {
+		const heading = name ? "Edit Item" : "Add Item";
+		const fields = [
+			{name: 'uuid', value: uuid, type: 'hidden'},
+			{name: 'list', value: list, type: 'hidden'},
+			{name: 'name', value: name},
+			{name: 'url', value: url},
+		];
+		super(heading, fields);
+		const component = this;
+	}
+	async save(data) {
+		if (!data.get('uuid')) return;
+		if (!data.get('list')) return;
+		if (!data.get('name')) return;
+		const path = `/api/item/${encodeURIComponent(data.get('uuid'))}`;
+		const body = JSON.stringify({
+			name: data.get('name'),
+			url: data.get('url'),
+			list: data.get('list'),
+		});
+		const resp = await fetch(path, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': "application/json",
+			},
+			body,
+		});
+		if (!resp.ok) {
+			alert("Failed to update Item");
+
+		// Normally the Service Worker sends the update message, but if the response isn't served by the SW, that needs doing here
+		} else if (resp.status != 202) {
+			dataUpdates.postMessage({method: 'PUT', path, body, hardDelete: true});
+		}
+	}
+
+}
+customElements.define('item-prompt', ItemPrompt);

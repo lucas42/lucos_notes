@@ -8,7 +8,7 @@ export default class AbstractControlButton extends HTMLElement {
 		style.textContent = `
 			:host {
 				background-color: black;
-				background-image: -webkit-gradient(linear, 0 100%, 0 0, color-stop(0, transparent), color-stop(0.15, transparent), color-stop(0.9, rgba(255, 255, 255, 0.4)));
+				background-image: linear-gradient(rgba(255, 255, 255, 0.4) 10%, transparent 85%, transparent 100%);
 				color: #fff;
 				border-radius: 1em;
 				padding: 0 1em;
@@ -21,7 +21,7 @@ export default class AbstractControlButton extends HTMLElement {
 				white-space: nowrap;
 			}
 			:host(:active) {
-				background-image: linear-gradient(rgba(255, 255, 255, 0.4) 10%, transparent 85%, transparent 100%);
+				background-image: linear-gradient(transparent 0, transparent 15%, rgba(255, 255, 255, 0.4) 90%);
 			}
 			:host-context([data-loading]) {
 				animation: diagonal_move 2s linear infinite;
