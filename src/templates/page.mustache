@@ -11,8 +11,10 @@
 		<meta name="apple-mobile-web-app-status-bar-style" content="black" />
 	</head>
 	<body data-type="{{pagetype}}" data-slug="{{slug}}">
-		<lucos-navbar font="'Reenie Beanie', Textile, cursive">{{#name}}{{name}}{{/name}}{{^name}}Todo List{{/name}}</lucos-navbar>
-		{{> *pagetype}}
+		<div class="content">
+			<lucos-navbar font="'Reenie Beanie', Textile, cursive">{{#name}}{{name}}{{/name}}{{^name}}Todo List{{/name}}</lucos-navbar>
+			{{> *pagetype}}
+		</div>
 		<script type="text/javascript" src="/client.js"></script>
 	</body>
 </html>
