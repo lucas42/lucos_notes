@@ -1,13 +1,8 @@
-const streamStatus = new BroadcastChannel("stream_status");
-streamStatus.addEventListener("message", function streamStatusMessage(event) {
+const statusChannel = new BroadcastChannel("lucos_status");
+
+statusChannel.addEventListener("message", function statusMessage(event) {
 	switch (event.data) {
-		case "opened":
-			document.getElementsByTagName('lucos-navbar')[0].setAttribute('streaming', 'active');
-			break;
-		case "closed":
-			document.getElementsByTagName('lucos-navbar')[0].setAttribute('streaming', 'stopped');
-			break;
-		case "forbidden":
+		case "streaming-forbidden":
 			console.log("Access Forbidden, reauthenticating");
 			const loginpage = "/login?redirect_path="+encodeURIComponent(window.location.pathname);
 			window.location.assign(loginpage);
@@ -31,4 +26,4 @@ dataUpdates.addEventListener("message", async function messageReceived(event) {
 	}
 });
 
-streamStatus.postMessage("client-loaded"); // This tells the service worker a new client is listened, so to re-send the latest state
+statusChannel.postMessage("client-loaded"); // This tells the service worker a new client is listened, so to re-send the latest state

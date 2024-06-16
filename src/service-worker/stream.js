@@ -2,9 +2,15 @@ import { modifyState } from './modify-state.js';
 let socket;
 
 export function initStream(state) {
-	const streamStatus = new BroadcastChannel("stream_status");
-	streamStatus.addEventListener("message", streamStatusMessageReceived);
+	const statusChannel = new BroadcastChannel("lucos_status");
 	let latestSocketState = "unknown";
+
+	// When a new client starts listening, resend the latest socket state.
+	statusChannel.addEventListener("message", function statusMessageReceived(event) {
+		if ("client-loaded" == event.data) {
+			statusChannel.postMessage('streaming-'+latestSocketState);
+		}
+	});
 
 	function connect() {
 		// If there's already an active websocket, then no need to do more
@@ -21,16 +27,16 @@ export function initStream(state) {
 	function socketOpened(event) {
 		console.log('WebSocket Connected (SW)');
 		latestSocketState = "opened";
-		streamStatus.postMessage("opened");
+		statusChannel.postMessage('streaming-opened');
 	}
 
 	function socketClosed(event) {
 		console.warn('WebSocket Closed (SW)', event.code, event.reason);
 		latestSocketState = "closed";
-		streamStatus.postMessage("closed");
+		statusChannel.postMessage('streaming-closed');
 		if ("Forbidden" == event.reason) {
 			latestSocketState = "forbidden";
-			streamStatus.postMessage("forbidden");
+			statusChannel.postMessage('streaming-forbidden');
 		}
 
 		/*
@@ -46,13 +52,6 @@ export function initStream(state) {
 			modifyState(state, data.method, data.path, data.body, true);
 		} catch (error) {
 			console.warn("Error handling stream event (SW)", error);
-		}
-	}
-
-	// When a new client starts listening, resend the latest socket state.
-	function streamStatusMessageReceived(event) {
-		if ("client-loaded" == event.data) {
-			streamStatus.postMessage(latestSocketState);
 		}
 	}
 
