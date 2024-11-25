@@ -42,8 +42,20 @@ export default class AbstractPrompt extends HTMLElement {
 				display: block;
 				text-transform: capitalize;
 			}
-			form label > input {
-				margin: 5px 10px;
+			form label > input, form label > select {
+				margin: 5px 0px;
+				max-width: 180px;
+				width: 90%;
+				box-sizing: border-box;
+			}
+			form label > select {
+			}
+			form .labeltext {
+				width: 45px;
+				display: inline-block;
+			}
+			form select {
+				text-transform: capitalize;
 			}
 			form input[type=submit] {
 				background-color: #211;
@@ -78,15 +90,27 @@ export default class AbstractPrompt extends HTMLElement {
 		overlay.append(headerNode);
 		const form = document.createElement("form");
 		for (const field of fields) {
-			const input = document.createElement("input");
-			input.name = field.name;
-			if (field.value) input.value = field.value;
-			input.type = field.type || "text";
+			let input;
+			if (field.type == "select") {
+				input = document.createElement("select");
+				input.name = field.name;
+				field.options.forEach(optionName => {
+					input.add(new Option(optionName, optionName, (field.value === optionName), (field.value === optionName)));
+				});
+			} else {
+				input = document.createElement("input");
+				input.name = field.name;
+				if (field.value) input.value = field.value;
+				input.type = field.type || "text";
+			}
 			if (input.type == "hidden") {
 				form.append(input);
 			} else {
 				const label = document.createElement("label");
-				label.append(document.createTextNode(field.label || field.name));
+				const text = document.createElement("span");
+				text.append(document.createTextNode(field.label || field.name));
+				text.classList.add("labeltext")
+				label.append(text);
 				label.append(input);
 				form.append(label);
 			}

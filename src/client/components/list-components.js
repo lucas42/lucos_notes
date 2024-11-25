@@ -25,7 +25,7 @@ class EditListElement extends AbstractInlineButton {
 		const component = this;
 		component.addEventListener('click', async () => {
 			component.dataset.loading = true;
-			const prompt = new ListPrompt(component.getAttribute('slug'), component.getAttribute('name'), component.getAttribute('icon'));
+			const prompt = new ListPrompt(component.getAttribute('slug'), component.getAttribute('name'), component.getAttribute('type'), component.getAttribute('icon'));
 			document.body.append(prompt);
 			delete component.dataset.loading;
 		});
@@ -62,11 +62,12 @@ class DeleteListButton extends AbstractControlButton {
 customElements.define('delete-list-button', DeleteListButton);
 
 class ListPrompt extends AbstractPrompt {
-	constructor(slug, name, icon) {
+	constructor(slug, name, type, icon) {
 		const heading = name ? "Edit List" : "Add List";
 		const fields = [
 			{name: 'slug', value: slug, type: slug ? "hidden":"text"},
 			{name: 'name', value: name},
+			{name: 'type', value: type, type: 'select', options:['todo', 'collection']},
 			{name: 'icon', value: icon},
 		];
 		super(heading, fields);
@@ -78,6 +79,7 @@ class ListPrompt extends AbstractPrompt {
 		const path = `/api/list/${encodeURIComponent(data.get('slug'))}`;
 		const body = JSON.stringify({
 			name: data.get('name'),
+			type: data.get('type'),
 			icon: data.get('icon'),
 		});
 		const resp = await fetch(path, {

@@ -41,6 +41,7 @@ export default class State {
 			lists.push({
 				slug,
 				name: this.#data.lists[slug].name || slug,
+				type: this.#data.lists[slug].type || 'todo',
 				unsynced: this.#data.lists[slug].unsynced,
 				deleted: this.#data.lists[slug].deleted,
 				icon: this.#data.lists[slug].icon || '📋',
@@ -58,6 +59,7 @@ export default class State {
 		return {
 			slug,
 			name: this.#data.lists[slug].name || slug,
+			type: this.#data.lists[slug].type || 'todo',
 			items: this.#data.lists[slug].items.map(uuid => {
 				const item = this.#data.items[uuid];
 				return {uuid, name: item.name, url: item.url, unsynced: item.unsynced, deleted: item.deleted};
