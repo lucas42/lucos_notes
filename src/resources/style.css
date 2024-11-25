@@ -13,15 +13,35 @@ body {
 .content {
 	margin: 35px 5% 10px 5%;
 }
-nav {
-	margin-left: 1em;
-}
 nav a {
 	text-decoration: none;
 	color: inherit;
 }
+nav a .listtypename {
+	text-transform: capitalize;
+}
 nav a:hover {
 	text-decoration: underline;
+}
+nav#return-nav {
+	margin-left: 1em;
+}
+nav#list-types {
+	padding-top: 10px;
+}
+nav#list-types .list-type {
+	border-radius: 2px 2px 0 0;
+	box-shadow: 6px -3px 5px -4px #000;
+	color: #333;
+	padding: 5px 15px;
+	text-transform: capitalize;
+}
+nav#list-types .list-type.current {
+	background: #edb;
+}
+nav#list-types .list-type:not(.current) {
+	background: #975;
+	padding-bottom: 0px;
 }
 #controls {
 	text-align: center;
@@ -36,7 +56,7 @@ main {
 	background: #edb;
 	color: #333;
 	border-radius: 2px;
-	-webkit-box-shadow: 5px 5px 10px 0px #000;
+	box-shadow: 5px 5px 10px 0px #000;
 	margin-bottom: 10px;
 }
 main > ul {

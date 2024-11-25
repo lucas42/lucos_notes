@@ -34,10 +34,28 @@ export default class State {
 		return Object.values(this.#data.lists).some(list => list.unsynced) || Object.values(this.#data.items).some(item => item.unsynced);
 	}
 
-	async getLists() {
+	async #getListTypes(currentType) {
+		await this.waitUntilDataLoaded;
+		let listtypes = [];
+		const listTypeSlugs = new Set(['todo', 'ideas']);
+		for (const slug in this.#data.lists) {
+			listTypeSlugs.add(this.#data.lists[slug].type || 'todo');
+		}
+		for (const slug of listTypeSlugs) {
+			const listtype = {
+				slug,
+				name: slug,
+			}
+			if (slug === currentType) listtype.current = true;
+			listtypes.push(listtype);
+		}
+		return listtypes;
+	}
+	async getListsByType(listType) {
 		await this.waitUntilDataLoaded;
 		let lists = [];
 		for (const slug in this.#data.lists) {
+			if (listType != (this.#data.lists[slug].type || 'todo')) continue;
 			lists.push({
 				slug,
 				name: this.#data.lists[slug].name || slug,
@@ -51,6 +69,8 @@ export default class State {
 			lists,
 			hasUnsyncedData: this.#hasUnsyncedData(),
 			pagetype: 'listoflists',
+			name: listType[0].toUpperCase() + listType.slice(1) + ' Lists',
+			listTypes: await this.#getListTypes(listType),
 		};
 	}
 	async getList(slug) {

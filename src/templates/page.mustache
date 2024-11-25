@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<link rel="apple-touch-icon" href="/icon.png" />
-		<title>Todo List{{#name}} - {{name}}{{/name}}</title>
+		<title>Notes{{#name}} - {{name}}{{/name}}</title>
 		<meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width" />
 		<link href="/style.css" rel="stylesheet">
 		<link rel="icon" type="image/png" href="/icon.png" />
@@ -12,7 +12,7 @@
 	</head>
 	<body data-type="{{pagetype}}" data-slug="{{slug}}">
 		<div class="content">
-			<lucos-navbar font="'Reenie Beanie', Textile, cursive">{{#name}}{{name}}{{/name}}{{^name}}Todo List{{/name}}</lucos-navbar>
+			<lucos-navbar font="'Reenie Beanie', Textile, cursive">{{#name}}{{name}}{{/name}}{{^name}}Notes{{/name}}</lucos-navbar>
 			{{> *pagetype}}
 		</div>
 		<script type="text/javascript" src="/client.js"></script>

@@ -1,10 +1,20 @@
+		<nav id="list-types">
+			{{#listTypes}}
+				{{#current}}
+					<span class="list-type current">{{slug}}</span>
+				{{/current}}
+				{{^current}}
+					<a href="/{{slug}}/" class="list-type">{{slug}}</a>
+				{{/current}}
+			{{/listTypes}}
+		</nav>
 		<main>
 			<ul>
 				{{#lists}}
 					<li class="list{{#deleted}} deleted{{/deleted}}">
 						<span class="icon">{{icon}}</span>
 						<edit-list-button slug="{{slug}}" name="{{name}}" type="{{type}}" icon="{{icon}}"></edit-list-button>
-						<a href="/todo/{{slug}}">{{name}}</a>
+						<a href="/list/{{slug}}">{{name}}</a>
 						{{#unsynced}}<span class="pending" title="Sync pending">⌁</span>{{/unsynced}}
 					</li>
 				{{/lists}}

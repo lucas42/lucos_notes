@@ -52,9 +52,21 @@ app.get('/login', (req, res) => {
 	res.redirect(req.query.redirect_path);
 });
 app.get('/todo', catchErrors(async (req, res) => {
-	res.render("page", await state.getLists());
+	res.render("page", await state.getListsByType('todo'));
 }));
 app.get('/todo/:slug', catchErrors(async (req, res) => {
+	res.redirect("/list/"+encodeURI(req.params.slug));
+}));
+app.get('/ideas', catchErrors(async (req, res) => {
+	res.render("page", await state.getListsByType('ideas'));
+}));
+app.get('/ideas/:slug', catchErrors(async (req, res) => {
+	res.redirect("/list/"+encodeURI(req.params.slug));
+}));
+app.get('/list', (req, res) => {
+	res.redirect("/todo/");
+});
+app.get('/list/:slug', catchErrors(async (req, res) => {
 	res.render("page", await state.getList(req.params.slug));
 }));
 app.get('/todo.json', catchErrors(async (req, res) => {

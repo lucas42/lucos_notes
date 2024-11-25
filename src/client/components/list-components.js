@@ -67,7 +67,7 @@ class ListPrompt extends AbstractPrompt {
 		const fields = [
 			{name: 'slug', value: slug, type: slug ? "hidden":"text"},
 			{name: 'name', value: name},
-			{name: 'type', value: type, type: 'select', options:['todo', 'collection']},
+			{name: 'type', value: type, type: 'select', options:['todo', 'ideas']},
 			{name: 'icon', value: icon},
 		];
 		super(heading, fields);

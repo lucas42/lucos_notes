@@ -50,11 +50,21 @@ async function handleRequest(request) {
 			await modifyStateWithRequest(state, request.clone());
 			return queueAndAttemptRequest(request);
 		}
-		if (component === "todo") {
+		if (component === "todo" || component === "ideas") {
+			const slug = urlparts.shift();
+			if (request.method === "GET") {
+				if (!slug) {
+					return populateTemplate(await state.getListsByType(component));
+				} else {
+					return Response.redirect("/list/"+slug);
+				}
+			}
+		}
+		if (component === "list") {
 			const slug = decodeURI(urlparts.shift());
 			if (request.method === "GET") {
 				if (!slug) {
-					return populateTemplate(await state.getLists());
+					return Response.redirect("/todo/");
 				} else {
 					return populateTemplate(await state.getList(slug));
 				}
