@@ -45,26 +45,39 @@ describe('Get, set and delete state data', () => {
 	function getPrepopulatedState() {
 		const state = new State(() => {});
 		state.setRawData({lists:{
-			'groceries': {name: "Grocery Shopping", extraneousField: true, items:["abc","123"], icon:'🛒'},
-			'moarthings': {name: "Even More Stuff", ignoreme:"yes please", metoo: ["of course"], items:[]},
+			'groceries': {name: "Grocery Shopping", extraneousField: true, items:["abc","123"], icon:'🛒', type: 'todo'},
+			'moarthings': {name: "Even More Stuff", ignoreme:"yes please", metoo: ["of course"], items:[], type: 'todo'},
+			'idealess': {name: "Ideas of things which aren't in tests", type: 'ideas'},
 		}, items:{
-			"123": {"name":"Second Item", extraExtraneousField: true, "list":"groceries", "url": "http://example.com/2nditem"},
-			"abc": {"name":"First Item", ignoreThese:["this", "and this"], "list":"groceries"},
-			"unused": {"name":"Unused Item"},
+			"123": {"name":"Second Item", extraExtraneousField: true, "list":"groceries", "url": "http://example.com/2nditem", "type": "todo"},
+			"abc": {"name":"First Item", ignoreThese:["this", "and this"], "list":"groceries", "type": "todo"},
+			"unused": {"name":"Unused Item", "type": "todo"},
 		}});
 		return state;
 	}
 
 	test('Get a list of lists in a format usable for templates', async	() => {
 		const state = getPrepopulatedState();
-		const output = await state.getLists();
+		const output = await state.getListsByType('todo');
 		expect(output).toEqual({
 			lists:[
-				{slug:'groceries', name: "Grocery Shopping", icon: "🛒"},
-				{slug:'moarthings', name: "Even More Stuff", icon: "📋"},
+				{slug:'groceries', name: "Grocery Shopping", icon: "🛒", "type": "todo"},
+				{slug:'moarthings', name: "Even More Stuff", icon: "📋", "type": "todo"},
 			],
 			hasUnsyncedData: false,
 			pagetype: 'listoflists',
+			name: "Todo Lists",
+			listTypes: [
+				{
+					"name": "todo",
+					"slug": "todo",
+					"current": true,
+				},
+				{
+					"name": "ideas",
+					"slug": "ideas",
+				},
+			],
 		});
 	});
 	test('Get a list in a format usable for templates', async	() => {
@@ -83,6 +96,7 @@ describe('Get, set and delete state data', () => {
 			hasUnsyncedData: false,
 			icon: "🛒",
 			pagetype: 'list',
+			type: 'todo',
 		});
 	});
 	test('Update list with a new name', async () => {
@@ -99,7 +113,7 @@ describe('Get, set and delete state data', () => {
 		const output = await state.getList('groceries');
 		expect(output.name).toEqual('groceries');
 
-		const indexOutput = await state.getLists();
+		const indexOutput = await state.getListsByType('todo');
 		expect(indexOutput.lists[0].name).toEqual('groceries');
 	});
 	test('Update non-existant list', async () => {
@@ -218,7 +232,7 @@ describe('Get, set and delete state data', () => {
 
 		expect(state.getList('groceries')).rejects.toThrow(NotFoundError);
 
-		const indexOutput = await state.getLists();
+		const indexOutput = await state.getListsByType('todo');
 		expect(indexOutput.lists).toHaveLength(1);
 	});
 	test('Hard delete non-existant list', async () => {
@@ -228,7 +242,7 @@ describe('Get, set and delete state data', () => {
 
 		expect(state.getList('jellies')).rejects.toThrow(NotFoundError);
 
-		const indexOutput = await state.getLists();
+		const indexOutput = await state.getListsByType('todo');
 		expect(indexOutput.lists).toHaveLength(2);
 	});
 	test('Soft delete entire list', async () => {
@@ -238,7 +252,7 @@ describe('Get, set and delete state data', () => {
 		const groceryOutput = await state.getList('groceries');
 		expect(groceryOutput.deleted).toBe(true);
 
-		const indexOutput = await state.getLists();
+		const indexOutput = await state.getListsByType('todo');
 		expect(indexOutput.lists).toHaveLength(2);
 		expect(indexOutput.lists[0].deleted).toBe(true);
 	});
@@ -249,7 +263,7 @@ describe('Get, set and delete state data', () => {
 
 		expect(state.getList('jellies')).rejects.toThrow(NotFoundError);
 
-		const indexOutput = await state.getLists();
+		const indexOutput = await state.getListsByType('todo');
 		expect(indexOutput.lists).toHaveLength(2);
 	});
 	test('Lists get default icon', async () => {
@@ -292,7 +306,7 @@ describe('Functions wait for raw data to be set', () => {
 	});
 	test('getLists waits for rawData', async () => {
 		const state = new State();
-		const outputPromise = state.getLists();
+		const outputPromise = state.getListsByType('todo');
 		state.setRawData(rawData());
 		const output = await outputPromise;
 		expect(output.lists).toHaveLength(2);
@@ -317,7 +331,7 @@ describe('Functions wait for raw data to be set', () => {
 		const setPromise = state.deleteList("groceries", true);
 		state.setRawData(rawData());
 		await setPromise;
-		const output = await state.getLists();
+		const output = await state.getListsByType('todo');
 		expect(output.lists).toHaveLength(1);
 	});
 	test('setItem waits for rawData', async () => {
@@ -361,7 +375,7 @@ describe('Sync function', () => {
 		const state = new State(syncFunction);
 		state.setRawData({lists:{'groceries':{items:[]}}, items:{}});
 		await state.getRawData();
-		await state.getLists();
+		await state.getListsByType('todo');
 		await state.getList('groceries');
 		expect(syncFunction.mock.calls.length).toBe(0);
 	});
@@ -371,15 +385,15 @@ describe('Check for unsynced data', () => {
 	test('With no sync function, data only counts as synced when new raw data is set', async () => {
 		const state = new State();
 		state.setRawData({lists:{}, items:{}});
-		expect((await state.getLists()).hasUnsyncedData).toBe(false);
+		expect((await state.getListsByType('todo')).hasUnsyncedData).toBe(false);
 		await state.setItem('abc', {name: "New Item", list:'newlist'});
-		expect((await state.getLists()).hasUnsyncedData).toBe(true);
-		expect((await state.getLists()).lists[0]).toHaveProperty('unsynced', true);
+		expect((await state.getListsByType('todo')).hasUnsyncedData).toBe(true);
+		expect((await state.getListsByType('todo')).lists[0]).toHaveProperty('unsynced', true);
 		expect((await state.getList('newlist'))).toHaveProperty('unsynced', true);
 		expect((await state.getList('newlist')).items[0]).toHaveProperty('unsynced', true);
 		state.setRawData({lists:{'newlist':{items:['abc']}}, items:{'abc': {name: "New Item", list:'newlist'}}});
-		expect((await state.getLists()).hasUnsyncedData).toBe(false);
-		expect((await state.getLists()).lists[0]).toHaveProperty('unsynced', undefined);
+		expect((await state.getListsByType('todo')).hasUnsyncedData).toBe(false);
+		expect((await state.getListsByType('todo')).lists[0]).toHaveProperty('unsynced', undefined);
 		expect((await state.getList('newlist'))).toHaveProperty('unsynced', undefined);
 		expect((await state.getList('newlist')).items[0]).toHaveProperty('unsynced', undefined);
 	});
@@ -392,12 +406,12 @@ describe('Check for unsynced data', () => {
 		const syncFunction = jest.fn(() => promise);
 		const state = new State(syncFunction);
 		state.setRawData({lists:{}, items:{}});
-		expect((await state.getLists()).hasUnsyncedData).toBe(false);
+		expect((await state.getListsByType('todo')).hasUnsyncedData).toBe(false);
 		const setItemPromise = state.setItem('abc', {name: "New Item", list:'newlist'});
-		expect((await state.getLists()).hasUnsyncedData).toBe(true);
+		expect((await state.getListsByType('todo')).hasUnsyncedData).toBe(true);
 		resolvePromise(true);
 		await setItemPromise;
-		expect((await state.getLists()).hasUnsyncedData).toBe(false);
+		expect((await state.getListsByType('todo')).hasUnsyncedData).toBe(false);
 	});
 	test('With sync function, data counts as unsynced if function fails', async () => {
 		let resolvePromise, rejectPromise;
@@ -408,27 +422,27 @@ describe('Check for unsynced data', () => {
 		const syncFunction = jest.fn(() => promise);
 		const state = new State(syncFunction);
 		state.setRawData({lists:{}, items:{}});
-		expect((await state.getLists()).hasUnsyncedData).toBe(false);
+		expect((await state.getListsByType('todo')).hasUnsyncedData).toBe(false);
 		const setItemPromise = state.setItem('abc', {name: "New Item", list:'newlist'});
-		expect((await state.getLists()).hasUnsyncedData).toBe(true);
+		expect((await state.getListsByType('todo')).hasUnsyncedData).toBe(true);
 		rejectPromise(false);
 		await setItemPromise;
-		expect((await state.getLists()).hasUnsyncedData).toBe(true);
+		expect((await state.getListsByType('todo')).hasUnsyncedData).toBe(true);
 	});
 	test('When data is passed with `alreadySynced` parameter, it never gets marked as unsynced', async () => {
 		const state = new State();
 		state.setRawData({lists:{}, items:{}});
-		expect((await state.getLists()).hasUnsyncedData).toBe(false);
+		expect((await state.getListsByType('todo')).hasUnsyncedData).toBe(false);
 		await state.setItem('abc', {name: "New Item", list:'newlist'}, true);
-		expect((await state.getLists()).hasUnsyncedData).toBe(false);
+		expect((await state.getListsByType('todo')).hasUnsyncedData).toBe(false);
 	});
 	test('When unsynced data is replaced by a call with `alreadySynced` parameter, it gets marked as synced', async () => {
 		const state = new State();
 		state.setRawData({lists:{}, items:{}});
 		await state.setList('newlist', {name: "New List"});
-		expect((await state.getLists()).hasUnsyncedData).toBe(true);
+		expect((await state.getListsByType('todo')).hasUnsyncedData).toBe(true);
 		await state.setList('newlist', {name: "New List"}, true);
-		expect((await state.getLists()).hasUnsyncedData).toBe(false);
+		expect((await state.getListsByType('todo')).hasUnsyncedData).toBe(false);
 	});
 
 });
