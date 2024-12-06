@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/lucas42/lucos_notes#readme",
   "dependencies": {
-    "express": "^4.21.1",
+    "express": "^4.21.2",
     "mustache": "npm:mustache-dynamic-names@1.0.3",
     "uuid": "^11.0.3",
     "ws": "^8.18.0"
