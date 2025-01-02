@@ -50,7 +50,7 @@ async function handleRequest(request) {
 			await modifyStateWithRequest(state, request.clone());
 			return queueAndAttemptRequest(request);
 		}
-		if (component === "todo" || component === "ideas") {
+		if (component === "todo" || component === "plans" || component === "ideas") {
 			const slug = urlparts.shift();
 			if (request.method === "GET") {
 				if (!slug) {

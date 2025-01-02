@@ -63,6 +63,12 @@ app.get('/ideas', catchErrors(async (req, res) => {
 app.get('/ideas/:slug', catchErrors(async (req, res) => {
 	res.redirect("/list/"+encodeURI(req.params.slug));
 }));
+app.get('/plans', catchErrors(async (req, res) => {
+	res.render("page", await state.getListsByType('plans'));
+}));
+app.get('/plans/:slug', catchErrors(async (req, res) => {
+	res.redirect("/list/"+encodeURI(req.params.slug));
+}));
 app.get('/list', (req, res) => {
 	res.redirect("/todo/");
 });

@@ -74,6 +74,10 @@ describe('Get, set and delete state data', () => {
 					"current": true,
 				},
 				{
+					"name": "plans",
+					"slug": "plans",
+				},
+				{
 					"name": "ideas",
 					"slug": "ideas",
 				},
