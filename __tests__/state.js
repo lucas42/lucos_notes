@@ -285,6 +285,13 @@ describe('Get, set and delete state data', () => {
 		const output = await state.getList('housework');
 		expect(output.icon).toEqual('🧹');
 	});
+	test('List icon can handle zwj sequence emojis', async () => {
+		const state = getPrepopulatedState();
+
+		await state.setList("coding",  {icon: "🧑‍💻"});
+		const output = await state.getList('coding');
+		expect(output.icon).toEqual('🧑‍💻');
+	});
 });
 
 describe('Functions wait for raw data to be set', () => {

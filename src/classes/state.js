@@ -97,8 +97,9 @@ export default class State {
 		data.items = this.#data.lists[slug]?.items || [];
 		if (!alreadySynced) data.unsynced = true;
 
-		// Using the raw string here would count emjoi as multiple characters, but the iterable protocol splits the string to codepoints, so each emoji is one
-		if (data.icon && [...data.icon].length > 1) data.icon = [...data.icon][0];
+		// Use a segmenter to ensure only the first grapheme is displayed as an icon
+		const segmenter = new Intl.Segmenter(undefined, { granularity: 'grapheme' });
+		if (data.icon) data.icon = [...segmenter.segment(data.icon)][0].segment;
 		this.#data.lists[slug] = data;
 	}
 	#removeItemFromList(itemuuid, listslug) {
