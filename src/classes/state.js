@@ -66,6 +66,7 @@ export default class State {
 			pagetype: 'listoflists',
 			name: listType[0].toUpperCase() + listType.slice(1) + ' Lists',
 			listTypes: this.getListTypes(listType),
+			listType,
 		};
 	}
 	async getList(slug) {

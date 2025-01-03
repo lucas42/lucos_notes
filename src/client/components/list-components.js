@@ -42,7 +42,7 @@ class NewListButton extends AbstractControlButton {
 		const component = this;
 		this.addEventListener("click", async () => {
 			component.dataset.loading = true;
-			const prompt = new ListPrompt();
+			const prompt = new ListPrompt(undefined, undefined, component.getAttribute('default-type'));
 			document.body.append(prompt);
 			delete component.dataset.loading;
 		});
