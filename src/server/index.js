@@ -51,24 +51,15 @@ app.get('/login', (req, res) => {
 	}
 	res.redirect(req.query.redirect_path);
 });
-app.get('/todo', catchErrors(async (req, res) => {
-	res.render("page", await state.getListsByType('todo'));
-}));
-app.get('/todo/:slug', catchErrors(async (req, res) => {
-	res.redirect("/list/"+encodeURI(req.params.slug));
-}));
-app.get('/ideas', catchErrors(async (req, res) => {
-	res.render("page", await state.getListsByType('ideas'));
-}));
-app.get('/ideas/:slug', catchErrors(async (req, res) => {
-	res.redirect("/list/"+encodeURI(req.params.slug));
-}));
-app.get('/plans', catchErrors(async (req, res) => {
-	res.render("page", await state.getListsByType('plans'));
-}));
-app.get('/plans/:slug', catchErrors(async (req, res) => {
-	res.redirect("/list/"+encodeURI(req.params.slug));
-}));
+state.getListTypes().forEach(listType => {
+	const typeSlug = listType.slug;
+	app.get(`/${listType.slug}`, catchErrors(async (req, res) => {
+		res.render("page", await state.getListsByType(listType.slug));
+	}));
+	app.get(`/${listType.slug}/:slug`, catchErrors(async (req, res) => {
+		res.redirect("/list/"+encodeURI(req.params.slug));
+	}));
+});
 app.get('/list', (req, res) => {
 	res.redirect("/todo/");
 });

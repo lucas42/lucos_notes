@@ -33,13 +33,9 @@ export default class State {
 	#hasUnsyncedData() {
 		return Object.values(this.#data.lists).some(list => list.unsynced) || Object.values(this.#data.items).some(item => item.unsynced);
 	}
-	async #getListTypes(currentType) {
-		await this.waitUntilDataLoaded;
+	getListTypes(currentType = null) {
 		let listtypes = [];
 		const listTypeSlugs = new Set(['todo', 'plans', 'ideas']);
-		for (const slug in this.#data.lists) {
-			listTypeSlugs.add(this.#data.lists[slug].type || 'todo');
-		}
 		for (const slug of listTypeSlugs) {
 			const listtype = {
 				slug,
@@ -69,7 +65,7 @@ export default class State {
 			hasUnsyncedData: this.#hasUnsyncedData(),
 			pagetype: 'listoflists',
 			name: listType[0].toUpperCase() + listType.slice(1) + ' Lists',
-			listTypes: await this.#getListTypes(listType),
+			listTypes: this.getListTypes(listType),
 		};
 	}
 	async getList(slug) {

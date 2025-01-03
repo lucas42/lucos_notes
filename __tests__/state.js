@@ -450,3 +450,12 @@ describe('Check for unsynced data', () => {
 	});
 
 });
+
+
+describe('Synchronous functions', () => {
+	test('Can get type slugs without waiting to sync', async () => {
+		const state = new State();
+		const slugs = state.getListTypes();
+		expect(slugs).toHaveLength(3);
+	});
+});

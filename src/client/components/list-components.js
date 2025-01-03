@@ -3,6 +3,9 @@ import AbstractControlButton from './abstract-control-button.js';
 import AbstractPrompt from './abstract-prompt.js';
 const dataUpdates = new BroadcastChannel("data_updates");
 
+import State from '../../classes/state.js';
+const listTypeSlugs = (new State()).getListTypes().map(listType => listType.slug);
+
 async function deleteList(slug) {
 	const resp = await fetch('/api/list/'+encodeURIComponent(slug), {
 		method: 'DELETE',
@@ -67,7 +70,7 @@ class ListPrompt extends AbstractPrompt {
 		const fields = [
 			{name: 'slug', value: slug, type: slug ? "hidden":"text"},
 			{name: 'name', value: name},
-			{name: 'type', value: type, type: 'select', options:['todo', 'plans', 'ideas']},
+			{name: 'type', value: type, type: 'select', options: listTypeSlugs},
 			{name: 'icon', value: icon},
 		];
 		super(heading, fields);

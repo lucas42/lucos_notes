@@ -8,6 +8,7 @@ import { initStream } from './stream.js';
 import './update.js';
 
 const state = new State();
+const listTypeSlugs = state.getListTypes().map(listType => listType.slug);
 
 // Call fetchData every time the service worker is started to populate the state object from cache
 fetchData(state);
@@ -50,7 +51,7 @@ async function handleRequest(request) {
 			await modifyStateWithRequest(state, request.clone());
 			return queueAndAttemptRequest(request);
 		}
-		if (component === "todo" || component === "plans" || component === "ideas") {
+		if (listTypeSlugs.includes(component)) {
 			const slug = urlparts.shift();
 			if (request.method === "GET") {
 				if (!slug) {
