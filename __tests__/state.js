@@ -82,6 +82,7 @@ describe('Get, set and delete state data', () => {
 					"slug": "ideas",
 				},
 			],
+			listType: "todo",
 		});
 	});
 	test('Get a list in a format usable for templates', async	() => {
