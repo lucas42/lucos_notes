@@ -111,6 +111,9 @@ main li.spare {
 	text-decoration: line-through;
 	color: #555;
 }
+.complete {
+	color: #070;
+}
 @font-face {
 	font-family: 'Reenie Beanie';
 	font-style: normal;

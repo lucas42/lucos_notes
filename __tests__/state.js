@@ -61,8 +61,8 @@ describe('Get, set and delete state data', () => {
 		const output = await state.getListsByType('todo');
 		expect(output).toEqual({
 			lists:[
-				{slug:'groceries', name: "Grocery Shopping", icon: "🛒", "type": "todo"},
-				{slug:'moarthings', name: "Even More Stuff", icon: "📋", "type": "todo"},
+				{slug:'groceries', name: "Grocery Shopping", icon: "🛒", "type": "todo", complete: false },
+				{slug:'moarthings', name: "Even More Stuff", icon: "📋", "type": "todo", complete: true },
 			],
 			hasUnsyncedData: false,
 			pagetype: 'listoflists',

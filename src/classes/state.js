@@ -55,9 +55,10 @@ export default class State {
 				slug,
 				name: this.#data.lists[slug].name || slug,
 				type: this.#data.lists[slug].type || 'todo',
+				icon: this.#data.lists[slug].icon || '📋',
 				unsynced: this.#data.lists[slug].unsynced,
 				deleted: this.#data.lists[slug].deleted,
-				icon: this.#data.lists[slug].icon || '📋',
+				complete: this.#data.lists[slug].items.length === 0,
 			});
 		}
 		return {

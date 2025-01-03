@@ -15,6 +15,7 @@
 						<span class="icon">{{icon}}</span>
 						<edit-list-button slug="{{slug}}" name="{{name}}" type="{{type}}" icon="{{icon}}"></edit-list-button>
 						<a href="/list/{{slug}}">{{name}}</a>
+						{{#complete}}<span class="complete" title="List Complete">✓</span>{{/complete}}
 						{{#unsynced}}<span class="pending" title="Sync pending">⌁</span>{{/unsynced}}
 					</li>
 				{{/lists}}
