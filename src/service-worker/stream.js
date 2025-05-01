@@ -35,7 +35,7 @@ export function initStream(state) {
 		latestSocketState = "closed";
 		statusChannel.postMessage('streaming-closed');
 		if ("Forbidden" == event.reason) {
-			latestSocketState = "forbidden";
+			latestSocketState = "unknown";
 			statusChannel.postMessage('streaming-forbidden');
 		}
 
