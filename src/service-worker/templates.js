@@ -9,6 +9,7 @@ export async function fetchTemplates() {
 		TEMPLATE_PATH + "page.mustache",
 		TEMPLATE_PATH + "listoflists.mustache",
 		TEMPLATE_PATH + "list.mustache",
+		TEMPLATE_PATH + "phrasebook.mustache",
 		TEMPLATE_PATH + "error.mustache",
 	]);
 }
@@ -21,13 +22,15 @@ async function getTemplate(templateid) {
 }
 
 async function getAllTemplates() {
-	const [listTemplate, listoflistsTemplate, errorTemplate] = await Promise.all([
+	const [listTemplate, phrasebookTemplate, listoflistsTemplate, errorTemplate] = await Promise.all([
 		getTemplate('list'),
+		getTemplate('phrasebook'),
 		getTemplate('listoflists'),
 		getTemplate('error'),
 	]);
 	return {
 		'list': listTemplate,
+		'phrasebook': phrasebookTemplate,
 		'listoflists': listoflistsTemplate,
 		'error': errorTemplate,
 	}

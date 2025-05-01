@@ -1,0 +1,26 @@
+		<nav id="return-nav">
+			<a href="/{{type}}/">&lt;- View all <span class="listtypename">{{type}} Lists</span></a>
+		</nav>
+		<main id="phrasebook">
+			<table>
+				<thead>
+					<td colspan="2">{{name}}</td><td colspan="2">Translation</td>
+				</thead>
+				{{#items}}
+				<tr class="item{{#deleted}} deleted{{/deleted}}">
+					<td colspan="2">{{name}}</td>
+					<td>{{translation}}</td>
+					<td class="inline-controls">
+						<edit-phrase-button uuid="{{uuid}}" name="{{name}}" translation="{{translation}}" list="{{slug}}"></edit-phrase-button>
+						<delete-phrase-button uuid="{{uuid}}"></delete-phrase-button>
+						{{#unsynced}}<span class="pending" title="Sync pending">⌁</span>{{/unsynced}}
+					</td>
+				</tr>
+				{{/items}}
+			</table>
+		</main>
+		<div id="controls">
+			<new-phrase-button list="{{slug}}"></new-phrase-button>
+			<delete-list-button slug="{{slug}}" empty="{{^items}}true{{/items}}"></delete-list-button>
+			<sync-button></sync-button>
+		</div>

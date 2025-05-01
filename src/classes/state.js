@@ -35,7 +35,7 @@ export default class State {
 	}
 	getListTypes(currentType = null) {
 		let listtypes = [];
-		const listTypeSlugs = new Set(['todo', 'plans', 'ideas']);
+		const listTypeSlugs = new Set(['todo', 'plans', 'ideas', 'phrasebooks']);
 		for (const slug of listTypeSlugs) {
 			const listtype = {
 				slug,
@@ -70,6 +70,10 @@ export default class State {
 			listType,
 		};
 	}
+	#getPageTypeByListType(listType) {
+		if (listType == 'phrasebooks') return 'phrasebook';
+		return 'list';
+	}
 	async getList(slug) {
 		await this.waitUntilDataLoaded;
 		if (!(slug in this.#data.lists)) throw new NotFoundError(`Can't find list '${slug}'`);
@@ -79,13 +83,13 @@ export default class State {
 			type: this.#data.lists[slug].type || 'todo',
 			items: this.#data.lists[slug].items.map(uuid => {
 				const item = this.#data.items[uuid];
-				return {uuid, name: item.name, url: item.url, unsynced: item.unsynced, deleted: item.deleted};
+				return {uuid, name: item.name, url: item.url, translation: item.translation, unsynced: item.unsynced, deleted: item.deleted};
 			}),
 			unsynced: this.#data.lists[slug].unsynced,
 			hasUnsyncedData: this.#hasUnsyncedData(),
 			deleted: this.#data.lists[slug].deleted,
 			icon: this.#data.lists[slug].icon || '📋',
-			pagetype: 'list',
+			pagetype: this.#getPageTypeByListType(this.#data.lists[slug].type),
 		}
 	}
 	async setList(slug, data, alreadySynced) {

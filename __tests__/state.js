@@ -48,9 +48,12 @@ describe('Get, set and delete state data', () => {
 			'groceries': {name: "Grocery Shopping", extraneousField: true, items:["abc","123"], icon:'🛒', type: 'todo'},
 			'moarthings': {name: "Even More Stuff", ignoreme:"yes please", metoo: ["of course"], items:[], type: 'todo'},
 			'idealess': {name: "Ideas of things which aren't in tests", type: 'ideas'},
+			'esperanto': {name: "Esperanto", type: 'phrasebooks', items:["xyz", "789"]},
 		}, items:{
 			"123": {"name":"Second Item", extraExtraneousField: true, "list":"groceries", "url": "http://example.com/2nditem", "type": "todo"},
 			"abc": {"name":"First Item", ignoreThese:["this", "and this"], "list":"groceries", "type": "todo"},
+			"789": {"name": "adiaŭ", "list": "esperanto", "type": "phrasebooks"},
+			"xyz": {"name": "saluton", "translation": "hello", "list": "esperanto", "type": "phrasebooks"},
 			"unused": {"name":"Unused Item", "type": "todo"},
 		}});
 		return state;
@@ -81,6 +84,10 @@ describe('Get, set and delete state data', () => {
 					"name": "ideas",
 					"slug": "ideas",
 				},
+				{
+					"name": "phrasebooks",
+					"slug": "phrasebooks",
+				}
 			],
 			listType: "todo",
 		});
@@ -192,6 +199,24 @@ describe('Get, set and delete state data', () => {
 		await state.setItem('123', {name: "Second Item", list: "groceries", url: "https://example.com/new2nditem"});
 		const groceryOutput = await state.getList('groceries');
 		expect(groceryOutput.items[1].url).toEqual("https://example.com/new2nditem");
+	});
+	test('Add translation to phrase', async () => {
+		const state = getPrepopulatedState();
+		await state.setItem('789', {name: "adiaŭ", list: "esperanto", translation: "bye"});
+		const groceryOutput = await state.getList('esperanto');
+		expect(groceryOutput.items[1].translation).toEqual("bye");
+	});
+	test('Remove translation from phrase', async () => {
+		const state = getPrepopulatedState();
+		await state.setItem('xyz', {name: "saluton", list: "esperanto"});
+		const groceryOutput = await state.getList('esperanto');
+		expect(groceryOutput.items[0].translation).toBeFalsy();
+	});
+	test('Modify translation of phrase', async () => {
+		const state = getPrepopulatedState();
+		await state.setItem('xyz', {name: "saluton", list: "esperanto", translation: "howdy"});
+		const groceryOutput = await state.getList('esperanto');
+		expect(groceryOutput.items[0].translation).toEqual("howdy");
 	});
 	test('Hard delete item from list', async () => {
 		const state = getPrepopulatedState();
@@ -464,6 +489,6 @@ describe('Synchronous functions', () => {
 	test('Can get type slugs without waiting to sync', async () => {
 		const state = new State();
 		const slugs = state.getListTypes();
-		expect(slugs).toHaveLength(3);
+		expect(slugs).toHaveLength(4);
 	});
 });

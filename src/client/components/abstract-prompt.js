@@ -51,7 +51,7 @@ export default class AbstractPrompt extends HTMLElement {
 			form label > select {
 			}
 			form .labeltext {
-				width: 45px;
+				width: 80px;
 				display: inline-block;
 			}
 			form select {

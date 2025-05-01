@@ -126,3 +126,33 @@ main li.spare {
 	line-height: 1em;
 	width: 1em;
 }
+#phrasebook {
+	padding: 2px;
+}
+#phrasebook table {
+	width: 100%;
+	border-collapse: collapse;
+}
+#phrasebook thead {
+	background-color: #700;
+	color: #fff;
+	font-weight: bold;
+	text-align: center;
+}
+#phrasebook td {
+	padding: 2px 5px;
+	border-bottom: dotted #99a;
+}
+#phrasebook thead td {
+	border-bottom: solid #700;
+}
+#phrasebook .inline-controls {
+	width: 70px;
+}
+#phrasebook td:first-child {
+	border-right: solid #700;
+	width: 50%;
+}
+#phrasebook tr:last-child td {
+	border-bottom: none;
+}
