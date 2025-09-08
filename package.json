@@ -25,7 +25,7 @@
   "dependencies": {
     "express": "^5.1.0",
     "mustache": "npm:mustache-dynamic-names@1.0.3",
-    "uuid": "^11.1.0",
+    "uuid": "^12.0.0",
     "ws": "^8.18.3"
   },
   "devDependencies": {
