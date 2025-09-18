@@ -1,0 +1,23 @@
+{
+	"name": "lucOS Notes",
+	"short_name": "Notes",
+	"start_url": "/todo/",
+	"scope": "/",
+	"display": "standalone",
+	"theme_color": "#edb",
+	"background_color": "#666",
+	"icons":[
+		{
+			"src": "/icon.png",
+			"sizes": "100x100",
+			"type": "image/png",
+			"purpose": "any"
+		},
+		{
+			"src": "/maskable_icon.png",
+			"sizes": "133x133",
+			"type": "image/png",
+			"purpose": "maskable"
+		}
+	]
+}

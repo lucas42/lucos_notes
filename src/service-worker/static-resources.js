@@ -4,6 +4,7 @@ const localUrls = [
 	'/style.css',
 	'/client.js',
 	'/ReenieBeanie.ttf',
+	'/manifest.json',
 ];
 export default async function refresh() {
 	try {
