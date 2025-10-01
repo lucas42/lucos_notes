@@ -4,7 +4,7 @@
 	"start_url": "/todo/",
 	"scope": "/",
 	"display": "standalone",
-	"theme_color": "#edb",
+	"theme_color": "#000",
 	"background_color": "#666",
 	"icons":[
 		{
