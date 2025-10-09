@@ -33,7 +33,7 @@
     "idb": "^8.0.3",
     "jest": "^30.2.0",
     "lucos_navbar": "^2.0.14",
-    "restful-queue": "^1.0.27",
+    "restful-queue": "^1.0.28",
     "terser-webpack-plugin": "^5.3.14",
     "webpack-cli": "^6.0.1"
   },
