@@ -46,7 +46,7 @@ app.get('/', (req, res) => {
 app.get('/login', (req, res) => {
 
 	// Check the redirect query to avoid open redirect vulnerabilities
-	if (!req.query.redirect_path?.startsWith("/todo")) {
+	if (!req.query.redirect_path?.startsWith("/")) {
 		throw new ValidationError("Invalid redirect_path parameter");
 	}
 	res.redirect(req.query.redirect_path);
