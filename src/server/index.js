@@ -7,7 +7,8 @@ import { startup as websocketStartup } from './websocket.js';
 
 const app = express();
 app.auth = authMiddleware;
-const port = process.env.PORT || 8004;
+const port = process.env.PORT
+if (!port) throw 'Environment Variable PORT not set';
 
 app.engine('mustache', mustacheExpress);
 app.set('view engine', 'mustache');
