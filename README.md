@@ -3,14 +3,14 @@ An offline todo list
 
 ## Dependencies
 * docker
-* docker-compose
+* docker compose
 
 ## Build-time Dependencies
 * nodejs
 * npm
 
 ## Running
-`nice -19 docker-compose up -d --no-build`
+`nice -19 docker compose up -d --no-build`
 
 ## Building
 The build is configured to run in Dockerhub when a commit is pushed to the main branch in github.
