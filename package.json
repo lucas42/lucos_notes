@@ -37,6 +37,12 @@
     "terser-webpack-plugin": "^5.3.16",
     "webpack-cli": "^6.0.1"
   },
+  "overrides": {
+    "folder-hash": {
+      "minimatch": "^7.4.7"
+    },
+    "minimatch": "^5.1.7"
+  },
   "jest": {
     "testEnvironment": "node",
     "coveragePathIgnorePatterns": [
