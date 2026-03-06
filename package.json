@@ -29,7 +29,7 @@
     "ws": "^8.19.0"
   },
   "devDependencies": {
-    "folder-hash": "^4.1.1",
+    "folder-hash": "^4.1.2",
     "idb": "^8.0.3",
     "jest": "^30.2.0",
     "lucos_navbar": "^2.1.3",
