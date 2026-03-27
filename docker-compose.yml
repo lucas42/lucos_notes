@@ -1,7 +1,7 @@
 services:
   notes:
     build: .
-    container_name: notes
+    container_name: lucos_notes
     ports:
       - $PORT:$PORT
     environment:
