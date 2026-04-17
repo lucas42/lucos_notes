@@ -7,7 +7,7 @@ services:
     environment:
       - PORT
       - STATE_DIR=/var/lib/notes
-    image: lucas42/lucos_notes
+    image: lucas42/lucos_notes:${VERSION:-latest}
     volumes:
       - stateFile:/var/lib/notes
     restart: always
