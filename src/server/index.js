@@ -45,6 +45,7 @@ app.get('/', (req, res) => {
 });
 
 function isSafeRedirectPath(path) {
+	if (typeof path !== 'string') return false;
 	try {
 		const url = new URL(path, 'https://dummy.invalid');
 		return url.host === 'dummy.invalid';
