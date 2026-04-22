@@ -1,3 +1,9 @@
+function assertSafeKey(key) {
+	if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
+		throw new ValidationError(`Potentially prototype-polluting key rejected: ${key}`);
+	}
+}
+
 export default class State {
 	#data;
 	constructor(syncFunction) {
@@ -132,6 +138,7 @@ export default class State {
 
 	async deleteItem(uuid, hardDelete) {
 		await this.waitUntilDataLoaded;
+		assertSafeKey(uuid);
 		const existingData = this.#data.items[uuid];
 		if (!existingData) return;
 
@@ -149,6 +156,7 @@ export default class State {
 
 	async deleteList(slug, hardDelete) {
 		await this.waitUntilDataLoaded;
+		assertSafeKey(slug);
 		const existingData = this.#data.lists[slug];
 		if (!existingData) return;
 		if (hardDelete) {

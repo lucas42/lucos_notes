@@ -1,4 +1,5 @@
 import express from 'express';
+import { rateLimit } from 'express-rate-limit';
 import mustacheExpress from './templates.js';
 import { middleware as authMiddleware } from './auth.js';
 import state, {getInfoCheck} from './statefs.js';
@@ -43,11 +44,25 @@ app.get('/', (req, res) => {
 	res.redirect("/todo/");
 });
 
-// Endpoint that's purely for authentication purposes (which won't be handled by the service worker)
-app.get('/login', (req, res) => {
+function isSafeRedirectPath(path) {
+	try {
+		const url = new URL(path, 'https://dummy.invalid');
+		return url.host === 'dummy.invalid';
+	} catch {
+		return false;
+	}
+}
 
-	// Check the redirect query to avoid open redirect vulnerabilities
-	if (!req.query.redirect_path?.startsWith("/")) {
+const loginRateLimit = rateLimit({
+	windowMs: 15 * 60 * 1000,
+	limit: 20,
+	standardHeaders: true,
+	legacyHeaders: false,
+});
+
+// Endpoint that's purely for authentication purposes (which won't be handled by the service worker)
+app.get('/login', loginRateLimit, (req, res) => {
+	if (!isSafeRedirectPath(req.query.redirect_path)) {
 		throw new ValidationError("Invalid redirect_path parameter");
 	}
 	res.redirect(req.query.redirect_path);
