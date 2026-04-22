@@ -32,8 +32,8 @@
     "folder-hash": "^4.1.2",
     "idb": "^8.0.3",
     "jest": "^30.3.0",
-    "lucos_navbar": "^2.1.54",
-    "restful-queue": "^1.0.87",
+    "lucos_navbar": "^2.1.56",
+    "restful-queue": "^1.0.89",
     "terser-webpack-plugin": "^5.4.0",
     "webpack-cli": "^7.0.2"
   },
