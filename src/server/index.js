@@ -43,11 +43,19 @@ app.get('/', (req, res) => {
 	res.redirect("/todo/");
 });
 
+function isSafeRedirectPath(path) {
+	if (typeof path !== 'string') return false;
+	try {
+		const url = new URL(path, 'https://dummy.invalid');
+		return url.host === 'dummy.invalid';
+	} catch {
+		return false;
+	}
+}
+
 // Endpoint that's purely for authentication purposes (which won't be handled by the service worker)
 app.get('/login', (req, res) => {
-
-	// Check the redirect query to avoid open redirect vulnerabilities
-	if (!req.query.redirect_path?.startsWith("/")) {
+	if (!isSafeRedirectPath(req.query.redirect_path)) {
 		throw new ValidationError("Invalid redirect_path parameter");
 	}
 	res.redirect(req.query.redirect_path);
