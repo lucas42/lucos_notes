@@ -38,6 +38,12 @@ app.get('/_info', catchErrors(async (req, res) => {
 // Let resources bypass authentication, so service worker can update in the background
 app.use(express.static('./resources', {extensions: ['json']}));
 
+app.use(rateLimit({
+	windowMs: 15 * 60 * 1000,
+	limit: 100,
+	standardHeaders: true,
+	legacyHeaders: false,
+}));
 app.use((req, res, next) => app.auth(req, res, next));
 
 app.get('/', (req, res) => {
@@ -54,15 +60,8 @@ function isSafeRedirectPath(path) {
 	}
 }
 
-const loginRateLimit = rateLimit({
-	windowMs: 15 * 60 * 1000,
-	limit: 20,
-	standardHeaders: true,
-	legacyHeaders: false,
-});
-
 // Endpoint that's purely for authentication purposes (which won't be handled by the service worker)
-app.get('/login', loginRateLimit, (req, res) => {
+app.get('/login', (req, res) => {
 	if (!isSafeRedirectPath(req.query.redirect_path)) {
 		throw new ValidationError("Invalid redirect_path parameter");
 	}
