@@ -1,5 +1,4 @@
 import express from 'express';
-import { rateLimit } from 'express-rate-limit';
 import mustacheExpress from './templates.js';
 import { middleware as authMiddleware } from './auth.js';
 import state, {getInfoCheck} from './statefs.js';
@@ -38,12 +37,6 @@ app.get('/_info', catchErrors(async (req, res) => {
 // Let resources bypass authentication, so service worker can update in the background
 app.use(express.static('./resources', {extensions: ['json']}));
 
-app.use(rateLimit({
-	windowMs: 15 * 60 * 1000,
-	limit: 100,
-	standardHeaders: true,
-	legacyHeaders: false,
-}));
 app.use((req, res, next) => app.auth(req, res, next));
 
 app.get('/', (req, res) => {

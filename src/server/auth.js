@@ -1,4 +1,13 @@
 import querystring from 'querystring';
+import { rateLimit } from 'express-rate-limit';
+
+const unauthRateLimit = rateLimit({
+	windowMs: 15 * 60 * 1000,
+	limit: 20,
+	standardHeaders: true,
+	legacyHeaders: false,
+});
+
 let agents = {}; // Local cache of agent data, keyed by authenication token
 
 /**
@@ -40,9 +49,10 @@ export async function middleware(req, res, next) {
 		if (cookies.auth_token !== token) res.cookie('auth_token', token);
 		next();
 	} else {
-
-		// If no token was given, or the token wasn't successfully verified, send the user to the authentication service to log in
-		const protocol = req.query['X-Forwarded-Proto'] || 'http';
-		return res.redirect(302, "https://auth.l42.eu/authenticate?redirect_uri="+encodeURIComponent(protocol+'://'+req.headers.host+req.originalUrl));
+		unauthRateLimit(req, res, () => {
+			// If no token was given, or the token wasn't successfully verified, send the user to the authentication service to log in
+			const protocol = req.query['X-Forwarded-Proto'] || 'http';
+			res.redirect(302, "https://auth.l42.eu/authenticate?redirect_uri="+encodeURIComponent(protocol+'://'+req.headers.host+req.originalUrl));
+		});
 	}
 }
