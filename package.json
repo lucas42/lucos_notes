@@ -24,7 +24,7 @@
   "homepage": "https://github.com/lucas42/lucos_notes#readme",
   "dependencies": {
     "express": "^5.2.1",
-    "express-rate-limit": "^8.3.2",
+    "express-rate-limit": "^8.4.0",
     "mustache": "npm:mustache-dynamic-names@1.0.3",
     "uuid": "^14.0.0",
     "ws": "^8.20.0"
@@ -33,9 +33,9 @@
     "folder-hash": "^4.1.2",
     "idb": "^8.0.3",
     "jest": "^30.3.0",
-    "lucos_navbar": "^2.1.57",
-    "restful-queue": "^1.0.91",
-    "terser-webpack-plugin": "^5.4.0",
+    "lucos_navbar": "^2.1.60",
+    "restful-queue": "^1.0.93",
+    "terser-webpack-plugin": "^5.5.0",
     "webpack-cli": "^7.0.2"
   },
   "overrides": {
