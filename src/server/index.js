@@ -6,6 +6,7 @@ import { ValidationError, NotFoundError } from '../classes/state.js';
 import { startup as websocketStartup } from './websocket.js';
 
 const app = express();
+app.set('trust proxy', 1); // Trust one level of reverse proxy (lucos nginx)
 app.auth = authMiddleware;
 const port = process.env.PORT
 if (!port) throw 'Environment Variable PORT not set';
