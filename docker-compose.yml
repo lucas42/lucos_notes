@@ -6,6 +6,7 @@ services:
       - $PORT:$PORT
     environment:
       - PORT
+      - STATE_DIR
       - STATE_DIR=/var/lib/notes
     image: lucas42/lucos_notes:${VERSION:-latest}
     volumes:
