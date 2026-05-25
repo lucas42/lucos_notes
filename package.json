@@ -27,7 +27,7 @@
     "express-rate-limit": "^8.5.2",
     "mustache": "npm:mustache-dynamic-names@1.0.3",
     "uuid": "^14.0.0",
-    "ws": "^8.20.1"
+    "ws": "^8.21.0"
   },
   "devDependencies": {
     "folder-hash": "^4.1.3",
