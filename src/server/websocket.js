@@ -1,6 +1,5 @@
 import { WebSocketServer } from 'ws';
-import querystring from 'querystring';
-import { isAuthenticated } from './auth.js';
+import { verifySessionToken } from './auth.js';
 const DEBUG = false;
 
 export function sendToAllClients(server, event) {
@@ -32,13 +31,15 @@ export function startup(httpServer, app) {
 		console.log(`WebSocketServer listening`);
 	});
 	server.on('connection', async (client, request) => {
-		const cookies = querystring.parse(request.headers.cookie, '; ');
-		const token = cookies['auth_token'];
-		client.authenticated = await isAuthenticated(token);
+		// Verify the aithne_session cookie using the same shared logic as the HTTP middleware.
+		// WS handshakes cannot issue HTTP redirects or render 403 pages, so both the
+		// no-token and missing-scope cases resolve to close(1008, "Forbidden").
+		const { authenticated, authorized } = await verifySessionToken(request.headers.cookie);
+		client.authenticated = authenticated && authorized;
 		if (DEBUG) {
-			console.log(`New Web Socket Connected, isAuthenticated=${client.authenticated}`);
+			console.log(`New Web Socket Connected, authenticated=${client.authenticated}`);
 		}
-		if (!client.authenticated) return client.close(1008, "Forbidden");
+		if (!client.authenticated) return client.close(1008, 'Forbidden');
 
 		// TODO: send data on startup?
 	});

@@ -1,6 +1,6 @@
 import express from 'express';
 import mustacheExpress from './templates.js';
-import { middleware as authMiddleware } from './auth.js';
+import { middleware as authMiddleware, csrfMiddleware, AITHNE_ORIGIN } from './auth.js';
 import state, {getInfoCheck} from './statefs.js';
 import { ValidationError, NotFoundError } from '../classes/state.js';
 import { startup as websocketStartup } from './websocket.js';
@@ -15,6 +15,13 @@ app.engine('mustache', mustacheExpress);
 app.set('view engine', 'mustache');
 app.set('views', `./templates`);
 app.use(express.json());
+
+// Inject AITHNE_ORIGIN into res.locals so it's available in all templates
+// (used by the navbar's aithne-origin attribute for session keepalive).
+app.use((req, res, next) => {
+	res.locals.aithne_origin = AITHNE_ORIGIN;
+	next();
+});
 
 // Avoid authentication for _info, so call before invoking auth middleware
 app.get('/_info', catchErrors(async (req, res) => {
@@ -39,6 +46,11 @@ app.get('/_info', catchErrors(async (req, res) => {
 app.use(express.static('./resources', {extensions: ['json']}));
 
 app.use((req, res, next) => app.auth(req, res, next));
+
+// CSRF protection for state-mutating requests — see auth.js csrfMiddleware.
+// aithne_session is SameSite=None so cross-origin requests include it; we must
+// verify Origin/Referer for PUT/POST/DELETE/PATCH endpoints.
+app.use(csrfMiddleware);
 
 app.get('/', (req, res) => {
 	res.redirect("/todo/");
