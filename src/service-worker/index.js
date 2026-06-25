@@ -46,6 +46,17 @@ async function handleRequest(request) {
 			}
 		}
 
+		// All /auth/* requests (e.g. the aithne keepalive remint fired by lucos_navbar)
+		// should pass through to the network. Handle errors explicitly so a failed fetch
+		// returns a non-200 status rather than being swallowed by the outer catch-all.
+		if (component === "auth") {
+			try {
+				return await fetch(request);
+			} catch (error) {
+				return new Response(null, {status: 500, statusText: error.message});
+			}
+		}
+
 		// Any non-GET api calls, we should queue up and send when there's network
 		if (component === 'api' && request.method !== 'GET') {
 			await modifyStateWithRequest(state, request.clone());
