@@ -1,218 +1,357 @@
 import { jest } from '@jest/globals';
-import { isAuthenticated, middleware } from '../src/server/auth.js';
+import {
+	parseCookies,
+	hasNotesAccess,
+	verifySessionToken,
+	middleware,
+	csrfMiddleware,
+	_setVerifier,
+} from '../src/server/auth.js';
 
-/**
- * Build a minimal Express-like request object.
- *
- * @param {object} opts
- * @param {string}  opts.cookieStr  Raw Cookie header value (default: '')
- * @param {string}  opts.queryToken Token supplied as ?token= query param
- * @param {string}  opts.host       Host header (default: 'notes.l42.eu')
- * @param {string}  opts.path       originalUrl (default: '/')
- */
-function makeReq({ cookieStr = '', queryToken, host = 'notes.l42.eu', path = '/' } = {}) {
-	const query = {};
-	if (queryToken !== undefined) query.token = queryToken;
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function makeReq({ cookie, method = 'GET', originalUrl = '/', protocol = 'https', origin, referer } = {}) {
 	return {
-		headers: { cookie: cookieStr, host },
-		query,
-		originalUrl: path,
-		// express-rate-limit reads req.ip for per-client counting and
-		// validates the trust-proxy setting via req.app.get()
-		ip: '127.0.0.1',
-		socket: { remoteAddress: '127.0.0.1' },
-		app: { get: () => undefined },
+		headers: {
+			host: 'notes.l42.eu',
+			...(cookie !== undefined && { cookie }),
+			...(origin !== undefined && { origin }),
+			...(referer !== undefined && { referer }),
+		},
+		method,
+		originalUrl,
+		protocol,
 	};
 }
 
-/**
- * Build a minimal Express-like response object.
- * express-rate-limit needs setHeader/getHeader; auth middleware needs
- * redirect() and cookie().
- */
 function makeRes() {
-	const res = {};
-	res.cookie = jest.fn();
+	const res = { auth_agent: undefined, locals: {} };
 	res.redirect = jest.fn();
-	res.setHeader = jest.fn();
-	res.getHeader = jest.fn(() => null);
-	res.removeHeader = jest.fn();
+	res.status = jest.fn().mockReturnValue(res);
+	res.render = jest.fn().mockReturnValue(res);
+	res.json = jest.fn().mockReturnValue(res);
 	return res;
 }
 
-// ---------------------------------------------------------------------------
-// isAuthenticated() unit tests
-// ---------------------------------------------------------------------------
-describe('isAuthenticated', () => {
-	let originalFetch;
-	let consoleErrorSpy;
+// Sentinel verifier — throws if called unexpectedly (guards against tests
+// accidentally hitting the real JWKS endpoint).
+const sentinelVerifier = () => {
+	throw Object.assign(new Error('Test: real verifier should not be called'), { code: 'TEST_SENTINEL' });
+};
 
-	beforeAll(() => {
-		originalFetch = global.fetch;
+// ─── parseCookies ─────────────────────────────────────────────────────────────
+
+describe('parseCookies', () => {
+	test('returns empty object for undefined header', () => {
+		expect(parseCookies(undefined)).toEqual({});
 	});
 
-	beforeEach(() => {
-		global.fetch = jest.fn();
-		// Suppress expected console.error output from failed auth attempts
-		consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+	test('returns empty object for empty string', () => {
+		expect(parseCookies('')).toEqual({});
 	});
 
-	afterEach(() => {
-		global.fetch = originalFetch;
-		consoleErrorSpy.mockRestore();
+	test('parses a single cookie', () => {
+		expect(parseCookies('foo=bar')).toEqual({ foo: 'bar' });
 	});
 
-	test('Returns false immediately for missing token', async () => {
-		expect(await isAuthenticated(undefined)).toBe(false);
-		expect(await isAuthenticated(null)).toBe(false);
-		expect(await isAuthenticated('')).toBe(false);
-		// No fetch call needed for missing tokens
-		expect(global.fetch).not.toHaveBeenCalled();
+	test('parses multiple cookies', () => {
+		expect(parseCookies('foo=bar; baz=qux')).toEqual({ foo: 'bar', baz: 'qux' });
 	});
 
-	test('Returns true and calls auth server for a valid token', async () => {
-		global.fetch = jest.fn().mockResolvedValue({
-			status: 200,
-			json: () => Promise.resolve({ user: 'alice' }),
-		});
-		expect(await isAuthenticated('valid-unique-token-a')).toBe(true);
-		expect(global.fetch).toHaveBeenCalledWith(
-			'https://auth.l42.eu/data?token=valid-unique-token-a'
-		);
+	test('preserves = within cookie value (e.g. base64 JWT padding)', () => {
+		expect(parseCookies('aithne_session=abc.def.ghi==')).toEqual({ aithne_session: 'abc.def.ghi==' });
 	});
 
-	test('Returns false when auth server returns a non-200 status', async () => {
-		global.fetch = jest.fn().mockResolvedValue({ status: 401 });
-		expect(await isAuthenticated('rejected-token-a')).toBe(false);
+	test('only splits on the first = in a pair', () => {
+		expect(parseCookies('k=a=b=c')).toEqual({ k: 'a=b=c' });
 	});
 
-	test('Returns false when the auth server request throws', async () => {
-		global.fetch = jest.fn().mockRejectedValue(new Error('Network error'));
-		expect(await isAuthenticated('network-error-token-a')).toBe(false);
+	test('extracts aithne_session from a multi-cookie header', () => {
+		const result = parseCookies('other=value; aithne_session=jwt.tok.en==; another=x');
+		expect(result.aithne_session).toBe('jwt.tok.en==');
+		expect(result.other).toBe('value');
+		expect(result.another).toBe('x');
 	});
 });
 
-// ---------------------------------------------------------------------------
-// middleware() integration tests
-// ---------------------------------------------------------------------------
-describe('middleware', () => {
-	let originalFetch;
-	let consoleErrorSpy;
+// ─── hasNotesAccess ───────────────────────────────────────────────────────────
 
-	beforeAll(() => {
-		originalFetch = global.fetch;
+describe('hasNotesAccess', () => {
+	test('notes:use grants access', () => {
+		expect(hasNotesAccess(['notes:use'])).toBe(true);
 	});
 
+	test('notes:use alongside other scopes grants access', () => {
+		expect(hasNotesAccess(['eolas:read', 'notes:use', 'webhook'])).toBe(true);
+	});
+
+	test('empty scopes denies access', () => {
+		expect(hasNotesAccess([])).toBe(false);
+	});
+
+	test('unrelated scopes deny access', () => {
+		expect(hasNotesAccess(['eolas:read', 'webhook'])).toBe(false);
+	});
+
+	test('render-ui grants access in development', () => {
+		const orig = process.env.ENVIRONMENT;
+		process.env.ENVIRONMENT = 'development';
+		try {
+			expect(hasNotesAccess(['render-ui'])).toBe(true);
+		} finally {
+			if (orig === undefined) { delete process.env.ENVIRONMENT; } else { process.env.ENVIRONMENT = orig; }
+		}
+	});
+
+	test('render-ui is denied in production', () => {
+		const orig = process.env.ENVIRONMENT;
+		process.env.ENVIRONMENT = 'production';
+		try {
+			expect(hasNotesAccess(['render-ui'])).toBe(false);
+		} finally {
+			if (orig === undefined) { delete process.env.ENVIRONMENT; } else { process.env.ENVIRONMENT = orig; }
+		}
+	});
+});
+
+// ─── verifySessionToken ───────────────────────────────────────────────────────
+
+describe('verifySessionToken', () => {
+	afterEach(() => {
+		_setVerifier(sentinelVerifier);
+	});
+
+	test('no cookie header → not authenticated, not authorized', async () => {
+		const result = await verifySessionToken(undefined);
+		expect(result.authenticated).toBe(false);
+		expect(result.authorized).toBe(false);
+	});
+
+	test('cookie header without aithne_session → not authenticated', async () => {
+		const result = await verifySessionToken('other=value');
+		expect(result.authenticated).toBe(false);
+		expect(result.authorized).toBe(false);
+	});
+
+	test('valid JWT with notes:use → authenticated and authorized', async () => {
+		const fakePayload = { sub: 'user:1', principal_class: 'human', scopes: ['notes:use'], exp: 9999999999 };
+		_setVerifier(async () => ({ payload: fakePayload }));
+		const result = await verifySessionToken('aithne_session=valid.jwt.token');
+		expect(result.authenticated).toBe(true);
+		expect(result.authorized).toBe(true);
+		expect(result.payload).toEqual(fakePayload);
+	});
+
+	test('valid JWT missing notes:use → authenticated but not authorized', async () => {
+		const fakePayload = { sub: 'user:2', principal_class: 'human', scopes: ['eolas:read'], exp: 9999999999 };
+		_setVerifier(async () => ({ payload: fakePayload }));
+		const result = await verifySessionToken('aithne_session=valid.jwt.no-scope');
+		expect(result.authenticated).toBe(true);
+		expect(result.authorized).toBe(false);
+		expect(result.payload).toEqual(fakePayload);
+	});
+
+	test('valid JWT with empty scopes → authenticated but not authorized', async () => {
+		const fakePayload = { sub: 'user:3', scopes: [], exp: 9999999999 };
+		_setVerifier(async () => ({ payload: fakePayload }));
+		const result = await verifySessionToken('aithne_session=valid.jwt.empty-scopes');
+		expect(result.authenticated).toBe(true);
+		expect(result.authorized).toBe(false);
+	});
+
+	test('expired JWT → not authenticated, not authorized', async () => {
+		_setVerifier(async () => { throw Object.assign(new Error('JWTExpired'), { code: 'ERR_JWT_EXPIRED' }); });
+		const result = await verifySessionToken('aithne_session=expired.jwt.token');
+		expect(result.authenticated).toBe(false);
+		expect(result.authorized).toBe(false);
+	});
+
+	test('tampered JWT → not authenticated, not authorized', async () => {
+		_setVerifier(async () => { throw Object.assign(new Error('JWSSignatureVerificationFailed'), { code: 'ERR_JWS_SIGNATURE_VERIFICATION_FAILED' }); });
+		const result = await verifySessionToken('aithne_session=tampered.jwt.token');
+		expect(result.authenticated).toBe(false);
+		expect(result.authorized).toBe(false);
+	});
+});
+
+// ─── middleware ───────────────────────────────────────────────────────────────
+
+describe('middleware', () => {
+	let consoleWarnSpy;
+
 	beforeEach(() => {
-		global.fetch = jest.fn();
-		// Suppress expected console.error from auth failures / rate-limiter validation
-		consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+		consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 	});
 
 	afterEach(() => {
-		global.fetch = originalFetch;
-		consoleErrorSpy.mockRestore();
+		_setVerifier(sentinelVerifier);
+		consoleWarnSpy.mockRestore();
 	});
 
-	test('Passes through a request carrying a valid session cookie', async () => {
-		global.fetch = jest.fn().mockResolvedValue({
-			status: 200,
-			json: () => Promise.resolve({ user: 'alice' }),
-		});
-		const req = makeReq({ cookieStr: 'auth_token=cookie-token-b' });
+	// Branch 1: valid token + notes:use scope → proceed
+	test('valid JWT with notes:use → calls next() and sets res.auth_agent', async () => {
+		const fakePayload = { sub: 'user:1', principal_class: 'human', scopes: ['notes:use'], exp: 9999999999 };
+		_setVerifier(async () => ({ payload: fakePayload }));
+		const req = makeReq({ cookie: 'aithne_session=valid.jwt.token' });
 		const res = makeRes();
 		const next = jest.fn();
-
 		await middleware(req, res, next);
-
 		expect(next).toHaveBeenCalledTimes(1);
 		expect(res.redirect).not.toHaveBeenCalled();
-		expect(res.auth_agent).toEqual({ user: 'alice' });
+		expect(res.render).not.toHaveBeenCalled();
+		expect(res.auth_agent).toEqual(fakePayload);
 	});
 
-	test('Redirects a request with a missing cookie to the auth login page', async () => {
-		// No token at all — fetch should not be called
-		const req = makeReq({ cookieStr: '' });
+	// Branch 2: valid token, missing scope → render styled 403, no redirect
+	test('valid JWT missing notes:use → renders own styled 403, does not redirect', async () => {
+		const fakePayload = { sub: 'user:2', principal_class: 'human', scopes: ['eolas:read'], exp: 9999999999 };
+		_setVerifier(async () => ({ payload: fakePayload }));
+		const req = makeReq({ cookie: 'aithne_session=valid.jwt.no-scope' });
 		const res = makeRes();
 		const next = jest.fn();
-
 		await middleware(req, res, next);
-
 		expect(next).not.toHaveBeenCalled();
+		expect(res.redirect).not.toHaveBeenCalled();
+		expect(res.status).toHaveBeenCalledWith(403);
+		expect(res.render).toHaveBeenCalledWith('page', expect.objectContaining({ pagetype: 'error' }));
+	});
+
+	// Branch 3: no/expired/invalid token → redirect to aithne login
+	test('no cookie → redirects to aithne login', async () => {
+		const req = makeReq();
+		const res = makeRes();
+		const next = jest.fn();
+		await middleware(req, res, next);
+		expect(next).not.toHaveBeenCalled();
+		expect(res.render).not.toHaveBeenCalled();
 		expect(res.redirect).toHaveBeenCalledTimes(1);
 		const [status, url] = res.redirect.mock.calls[0];
 		expect(status).toBe(302);
-		expect(url).toContain('https://auth.l42.eu/authenticate');
+		expect(url).toContain('/auth/login?next=');
 	});
 
-	test('Redirect URL encodes the correct redirect_uri for the current request', async () => {
-		const req = makeReq({
-			cookieStr: '',
-			host: 'notes.l42.eu',
-			path: '/my-list',
-		});
+	test('unauthenticated redirect encodes the server-side URL into next param', async () => {
+		const req = makeReq({ protocol: 'https', originalUrl: '/todo/?filter=active' });
 		const res = makeRes();
-
 		await middleware(req, res, jest.fn());
-
-		expect(res.redirect).toHaveBeenCalledTimes(1);
-		const [status, rawUrl] = res.redirect.mock.calls[0];
-		expect(status).toBe(302);
-
-		const url = new URL(rawUrl);
-		expect(url.origin + url.pathname).toBe('https://auth.l42.eu/authenticate');
-
-		const redirectUri = decodeURIComponent(url.searchParams.get('redirect_uri'));
-		expect(redirectUri).toContain('notes.l42.eu');
-		expect(redirectUri).toContain('/my-list');
+		const [, redirectUrl] = res.redirect.mock.calls[0];
+		const returnUrl = decodeURIComponent(new URL(redirectUrl).searchParams.get('next'));
+		expect(returnUrl.startsWith('https://')).toBe(true);
+		expect(returnUrl).toContain('/todo/?filter=active');
 	});
 
-	test('Redirects a request with an invalid session cookie to the auth login page', async () => {
-		global.fetch = jest.fn().mockResolvedValue({ status: 403 });
-		const req = makeReq({ cookieStr: 'auth_token=invalid-token-b' });
+	test('expired JWT → redirects to login', async () => {
+		_setVerifier(async () => { throw Object.assign(new Error('JWTExpired'), { code: 'ERR_JWT_EXPIRED' }); });
+		const req = makeReq({ cookie: 'aithne_session=expired.jwt.token' });
 		const res = makeRes();
 		const next = jest.fn();
-
 		await middleware(req, res, next);
-
 		expect(next).not.toHaveBeenCalled();
 		expect(res.redirect).toHaveBeenCalledTimes(1);
-		const [status, url] = res.redirect.mock.calls[0];
-		expect(status).toBe(302);
-		expect(url).toContain('https://auth.l42.eu/authenticate');
+		expect(res.render).not.toHaveBeenCalled();
 	});
 
-	test('Sets auth_token cookie when token arrives as a query parameter', async () => {
-		global.fetch = jest.fn().mockResolvedValue({
-			status: 200,
-			json: () => Promise.resolve({ user: 'bob' }),
-		});
-		// Token in query string, not in cookie
-		const req = makeReq({ cookieStr: '', queryToken: 'query-token-b' });
+	test('tampered JWT → redirects to login', async () => {
+		_setVerifier(async () => { throw Object.assign(new Error('JWSSignatureVerificationFailed'), { code: 'ERR_JWS_SIGNATURE_VERIFICATION_FAILED' }); });
+		const req = makeReq({ cookie: 'aithne_session=tampered.jwt.token' });
 		const res = makeRes();
 		const next = jest.fn();
-
 		await middleware(req, res, next);
+		expect(next).not.toHaveBeenCalled();
+		expect(res.redirect).toHaveBeenCalledTimes(1);
+	});
+});
 
-		expect(next).toHaveBeenCalledTimes(1);
-		// Middleware should persist the token as a cookie for future requests
-		expect(res.cookie).toHaveBeenCalledWith('auth_token', 'query-token-b');
+// ─── csrfMiddleware ───────────────────────────────────────────────────────────
+
+describe('csrfMiddleware', () => {
+	let origEnv;
+
+	beforeEach(() => {
+		origEnv = process.env.ENVIRONMENT;
 	});
 
-	test('Does not reset cookie when token already matches the cookie', async () => {
-		global.fetch = jest.fn().mockResolvedValue({
-			status: 200,
-			json: () => Promise.resolve({ user: 'carol' }),
-		});
-		// Token present in both cookie and query — cookie already correct
-		const req = makeReq({ cookieStr: 'auth_token=same-token-b', queryToken: 'same-token-b' });
+	afterEach(() => {
+		if (origEnv === undefined) { delete process.env.ENVIRONMENT; } else { process.env.ENVIRONMENT = origEnv; }
+	});
+
+	test('GET request → passes through (no CSRF risk)', () => {
+		const req = makeReq({ method: 'GET' });
 		const res = makeRes();
 		const next = jest.fn();
-
-		await middleware(req, res, next);
-
+		csrfMiddleware(req, res, next);
 		expect(next).toHaveBeenCalledTimes(1);
-		// Token was already in the cookie — no need to set it again
-		expect(res.cookie).not.toHaveBeenCalled();
+		expect(res.status).not.toHaveBeenCalled();
+	});
+
+	test('PUT with *.l42.eu Origin → allowed', () => {
+		const req = makeReq({ method: 'PUT', origin: 'https://notes.l42.eu' });
+		const res = makeRes();
+		const next = jest.fn();
+		csrfMiddleware(req, res, next);
+		expect(next).toHaveBeenCalledTimes(1);
+	});
+
+	test('DELETE with subdomain l42.eu Origin → allowed', () => {
+		const req = makeReq({ method: 'DELETE', origin: 'https://other.l42.eu' });
+		const res = makeRes();
+		const next = jest.fn();
+		csrfMiddleware(req, res, next);
+		expect(next).toHaveBeenCalledTimes(1);
+	});
+
+	test('DELETE with evil.com Origin → rejected with 403', () => {
+		process.env.ENVIRONMENT = 'production';
+		const req = makeReq({ method: 'DELETE', origin: 'https://evil.com' });
+		const res = makeRes();
+		const next = jest.fn();
+		csrfMiddleware(req, res, next);
+		expect(next).not.toHaveBeenCalled();
+		expect(res.status).toHaveBeenCalledWith(403);
+	});
+
+	test('PUT with l42.eu Referer (no Origin) → allowed', () => {
+		const req = makeReq({ method: 'PUT', referer: 'https://notes.l42.eu/todo/' });
+		const res = makeRes();
+		const next = jest.fn();
+		csrfMiddleware(req, res, next);
+		expect(next).toHaveBeenCalledTimes(1);
+	});
+
+	test('DELETE with evil.com Referer (no Origin) → rejected with 403', () => {
+		process.env.ENVIRONMENT = 'production';
+		const req = makeReq({ method: 'DELETE', referer: 'https://evil.com/phishing' });
+		const res = makeRes();
+		const next = jest.fn();
+		csrfMiddleware(req, res, next);
+		expect(next).not.toHaveBeenCalled();
+		expect(res.status).toHaveBeenCalledWith(403);
+	});
+
+	test('PUT with no Origin and no Referer → allowed (same-origin request)', () => {
+		const req = makeReq({ method: 'PUT' });
+		const res = makeRes();
+		const next = jest.fn();
+		csrfMiddleware(req, res, next);
+		expect(next).toHaveBeenCalledTimes(1);
+	});
+
+	test('PUT with localhost Origin in development → allowed', () => {
+		process.env.ENVIRONMENT = 'development';
+		const req = makeReq({ method: 'PUT', origin: 'http://localhost:8004' });
+		const res = makeRes();
+		const next = jest.fn();
+		csrfMiddleware(req, res, next);
+		expect(next).toHaveBeenCalledTimes(1);
+	});
+
+	test('PUT with localhost Origin in production → rejected with 403', () => {
+		process.env.ENVIRONMENT = 'production';
+		const req = makeReq({ method: 'PUT', origin: 'http://localhost:8004' });
+		const res = makeRes();
+		const next = jest.fn();
+		csrfMiddleware(req, res, next);
+		expect(next).not.toHaveBeenCalled();
+		expect(res.status).toHaveBeenCalledWith(403);
 	});
 });

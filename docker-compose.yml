@@ -7,6 +7,12 @@ services:
     environment:
       - PORT
       - STATE_DIR=/var/lib/notes
+      - APP_ORIGIN
+      - ENVIRONMENT
+      - AITHNE_ORIGIN
+      - AITHNE_JWKS_URL
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     image: lucas42/lucos_notes:${VERSION:-latest}
     volumes:
       - stateFile:/var/lib/notes
