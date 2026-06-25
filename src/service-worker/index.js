@@ -23,15 +23,8 @@ self.addEventListener('install', event => {
 });
 
 async function handleRequest(request) {
-	const url = new URL(request.url);
-	// Cross-origin /auth/* requests (e.g. the aithne session keepalive remint fired by
-	// lucos_navbar) must reach the network directly and must sit outside the try/catch --
-	// a failed fetch would otherwise be caught and returned as a status-200 HTML page,
-	// giving a false-green keepalive result.
-	if (url.origin !== self.location.origin && url.pathname.startsWith("/auth/")) {
-		return fetch(request);
-	}
 	try {
+		const url = new URL(request.url);
 
 		if (url.hostname === "am.l42.eu") {
 			return await fetch(request);
@@ -48,6 +41,17 @@ async function handleRequest(request) {
 				await syncRequests();
 				await fetchData(state);
 				return new Response(null, {status: 204, statusText: "Successful Sync"});
+			} catch (error) {
+				return new Response(null, {status: 500, statusText: error.message});
+			}
+		}
+
+		// All /auth/* requests (e.g. the aithne keepalive remint fired by lucos_navbar)
+		// should pass through to the network. Handle errors explicitly so a failed fetch
+		// returns a non-200 status rather than being swallowed by the outer catch-all.
+		if (component === "auth") {
+			try {
+				return await fetch(request);
 			} catch (error) {
 				return new Response(null, {status: 500, statusText: error.message});
 			}
