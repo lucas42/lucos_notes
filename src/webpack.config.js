@@ -13,9 +13,11 @@ export default async () => {
 			path: new URL('./resources/', import.meta.url).pathname,
 		},
 		plugins: [
-			// Get the hashes of all the resources & templates to embed in a comment in service worker
+			// Get the hashes of all the resources, templates, and dependencies to embed in a comment in service worker.
+			// Dependency Hash covers package-lock.json so that a dependency-only change produces a different
+			// serviceworker.js and triggers a browser SW update.
 			new webpack.BannerPlugin({
-				banner: `Resource Hash: ${(await hashElement("./resources")).hash}\nClient JS Hash: ${(await hashElement("./client")).hash}\nTemplate Hash: ${(await hashElement("./templates")).hash}`,
+				banner: `Resource Hash: ${(await hashElement("./resources")).hash}\nClient JS Hash: ${(await hashElement("./client")).hash}\nTemplate Hash: ${(await hashElement("./templates")).hash}\nDependency Hash: ${(await hashElement("./package-lock.json")).hash}`,
 				include: 'serviceworker',
 			}),
 		],
