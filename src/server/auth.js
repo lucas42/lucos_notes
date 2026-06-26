@@ -127,7 +127,7 @@ export async function middleware(req, res, next) {
 		console.warn('JWT missing required notes:use scope:', result.payload?.sub);
 		res.status(403);
 		return res.render('page', {
-			message: "You don't have permission to access Notes. Contact the administrator to request access.",
+			message: "This action requires the `notes:use` scope. Contact the administrator to request access.",
 			pagetype: 'error',
 			name: 'ForbiddenError',
 		});
