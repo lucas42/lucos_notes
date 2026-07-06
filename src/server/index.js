@@ -23,6 +23,19 @@ app.use((req, res, next) => {
 	next();
 });
 
+// Unauthenticated, dynamic global template context — mirrors what res.locals
+// injects into server-rendered pages (see above). The service worker caches
+// this at install so its client-side render path (populateTemplate) has the
+// same globals available as a server render, even offline. Must stay dynamic
+// (not a static file under ./resources) because AITHNE_ORIGIN varies by
+// environment; must stay unauthenticated so the SW can fetch it in the
+// background and so a logged-out/expired user can still refresh it. The
+// value itself is non-sensitive — it's already in every server-rendered
+// page's HTML.
+app.get('/config.json', (req, res) => {
+	res.json({ aithne_origin: AITHNE_ORIGIN });
+});
+
 // Avoid authentication for _info, so call before invoking auth middleware
 app.get('/_info', catchErrors(async (req, res) => {
 	res.json({
