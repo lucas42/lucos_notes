@@ -1,7 +1,6 @@
 import State from '../classes/state.js';
 import fetchData from './fetch-state.js';
 import fetchResources from './static-resources.js';
-import fetchConfig from './config.js';
 import { fetchTemplates, populateTemplate } from './templates.js';
 import { queueAndAttemptRequest, syncRequests } from 'restful-queue';
 import { modifyStateWithRequest } from './modify-state.js';
@@ -20,7 +19,6 @@ self.addEventListener('install', event => {
 	event.waitUntil(Promise.all([
 		fetchResources(),
 		fetchTemplates(),
-		fetchConfig(),
 	]));
 });
 

@@ -1,7 +1,7 @@
 const TEMPLATE_CACHE = 'templates-v1';
 const TEMPLATE_PATH = '/templates/';
 import mustache from "mustache";
-import { getConfig } from './config.js';
+import { getConfig } from './static-resources.js';
 
 
 export async function fetchTemplates() {

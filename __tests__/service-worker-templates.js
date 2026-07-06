@@ -2,8 +2,8 @@ import { jest } from '@jest/globals';
 import { populateTemplate } from '../src/service-worker/templates.js';
 
 // The service worker's `caches` global isn't available in the jest 'node'
-// test environment (same approach as __tests__/service-worker-config.js), so
-// each test stubs it directly. `templates.js` also constructs `new
+// test environment (same approach as __tests__/service-worker-static-resources.js),
+// so each test stubs it directly. `templates.js` also constructs `new
 // Request(relativeUrl)` internally, which Node's fetch implementation can't
 // resolve without a base URL (there's no document to provide one, unlike in
 // a real browser/service-worker) — so tests stub the global `Request` too,
@@ -33,7 +33,7 @@ function installFakeRequest() {
 function installFakeCaches(configCachedResponse) {
 	global.caches = {
 		open: jest.fn(async (name) => {
-			if (name === 'config-v1') {
+			if (name === 'resources-v1') {
 				return { match: jest.fn().mockResolvedValue(configCachedResponse) };
 			}
 			// templates-v1
