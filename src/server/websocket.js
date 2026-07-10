@@ -1,5 +1,4 @@
 import { WebSocketServer } from 'ws';
-import { verifySessionToken } from './auth.js';
 const DEBUG = false;
 
 export function sendToAllClients(server, event) {
@@ -21,7 +20,11 @@ function sendEvent(client, event) {
 
 }
 
-export function startup(httpServer, app) {
+// verifySessionToken is injected (rather than imported directly from
+// auth.js) since it now closes over a per-process aithne client constructed
+// once by index.js's composition root, not a module-level singleton
+// (lucas42/lucos#268).
+export function startup(httpServer, app, verifySessionToken) {
 	const server = new WebSocketServer({
 		clientTracking: true,
 		server: httpServer,
