@@ -1,13 +1,24 @@
 import express from 'express';
 import mustacheExpress from './templates.js';
-import { middleware as authMiddleware, csrfMiddleware, AITHNE_ORIGIN } from './auth.js';
+import { createAuthMiddleware, csrfMiddleware, AITHNE_ORIGIN } from './auth.js';
 import state, {getInfoCheck} from './statefs.js';
 import { ValidationError, NotFoundError } from '../classes/state.js';
 import { startup as websocketStartup } from './websocket.js';
 
+// Composition root: the one place a real aithne client is constructed for
+// this process. index.js hands auth.middleware to the router and
+// auth.verifySessionToken to the websocket handshake — both close over the
+// same client instance (lucas42/lucos#268).
+const auth = createAuthMiddleware({
+	origin: AITHNE_ORIGIN,
+	jwksUrl: process.env.AITHNE_JWKS_URL,
+	appOrigin: process.env.APP_ORIGIN,
+	environment: process.env.ENVIRONMENT,
+});
+
 const app = express();
 app.set('trust proxy', 1); // Trust one level of reverse proxy (lucos nginx)
-app.auth = authMiddleware;
+app.auth = auth.middleware;
 const port = process.env.PORT
 if (!port) throw 'Environment Variable PORT not set';
 
@@ -177,4 +188,4 @@ const server = app.listen(port, function () {
 });
 
 
-websocketStartup(server, app);
+websocketStartup(server, app, auth.verifySessionToken);

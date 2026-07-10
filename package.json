@@ -24,7 +24,7 @@
   "homepage": "https://github.com/lucas42/lucos_notes#readme",
   "dependencies": {
     "express": "^5.2.1",
-    "lucos_aithne_jsclient": "^1.1.1",
+    "lucos_aithne_jsclient": "^1.1.2",
     "mustache": "npm:mustache-dynamic-names@1.0.3",
     "uuid": "^14.0.1",
     "ws": "^8.21.0"
