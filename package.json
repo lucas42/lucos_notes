@@ -27,7 +27,7 @@
     "lucos_aithne_jsclient": "^1.1.2",
     "mustache": "npm:mustache-dynamic-names@1.0.3",
     "uuid": "^14.0.1",
-    "ws": "^8.21.0"
+    "ws": "^8.21.1"
   },
   "devDependencies": {
     "folder-hash": "^4.1.3",
