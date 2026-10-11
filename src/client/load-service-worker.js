@@ -25,6 +25,8 @@ try {
 	// (Mostly useful for dev environments)
 	statusChannel.addEventListener("message", function statusMessage(event) {
 		if (event.data == "streaming-opened") registration.update();
+		// postMessage (unlike a BroadcastChannel) wakes the waiting worker if the browser has stopped it
+		if (event.data == "service-worker-skip-waiting") registration.waiting?.postMessage("skip-waiting");
 	});
 } catch (error) {
 	console.error('ServiceWorker registration failed: ' + error);

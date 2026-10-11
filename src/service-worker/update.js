@@ -1,9 +1,5 @@
-const statusChannel = new BroadcastChannel("lucos_status");
-statusChannel.addEventListener("message", function statusMessage(event) {
-	switch (event.data) {
-		case "service-worker-skip-waiting":
-			self.skipWaiting();
-	}
+self.addEventListener('message', event => {
+	if (event.data === 'skip-waiting') self.skipWaiting();
 });
 
 // Claim already-open tabs immediately, so controllerchange fires and the
